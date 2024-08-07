@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, inspect, MetaData
+from sqlalchemy import create_engine, inspect, MetaData
 
 from sqlalchemy.orm import sessionmaker, declarative_base
 from utils import config
@@ -14,7 +14,7 @@ metadata.reflect(bind=engine)
 inspector = inspect(engine)
 
 tables = inspector.get_table_names()
-print("Tables in the database:")
+print("Tables dans la database:")
 for table in tables:
     print(table)
     print(" ")
