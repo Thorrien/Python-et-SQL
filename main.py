@@ -1,26 +1,11 @@
-from sqlalchemy import create_engine, inspect, MetaData
+from app.controllers.login import Login
 
-from sqlalchemy.orm import sessionmaker, declarative_base
-from utils import config
 
-engine = create_engine(f'mysql+mysqldb://{config.DB_USER}:{config.DB_PASSWORD}@{config.DB_HOST}/{config.DB_NAME}', echo=True)
-Base = declarative_base()
+def main():
+    loggin = Login()
+    loggin.login()
 
-Session = sessionmaker(bind=engine)
-session = Session()
-metadata = MetaData()
-metadata.reflect(bind=engine)
 
-inspector = inspect(engine)
-
-tables = inspector.get_table_names()
-print("Tables dans la database:")
-for table in tables:
-    print(table)
-    print(" ")
-    tableentiere = metadata.tables[table]
-    print("########DETAIL###########")
-    for column in tableentiere.columns:
-        print(f"  - Column: {column.name}, Type: {column.type}")
-    print(" ")
-    print(" ")
+if __name__ == "__main__":
+    main()
+    
