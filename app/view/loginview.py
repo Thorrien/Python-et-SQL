@@ -1,4 +1,5 @@
 import getpass
+from app.controllers.security import validate_email
 
 class Loginview:
     def __init__(self):
@@ -10,5 +11,9 @@ class Loginview:
         print('Quel est votre Identifiant ? ')
         username = None
         username = input('email : ')
-        password = getpass.getpass("Mot de passe: ")
-        return username, password
+        if validate_email(username):
+            password = getpass.getpass("Mot de passe: ")
+            return username, password
+        else:
+            print("format d'email invalide")
+            exit()

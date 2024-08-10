@@ -1,5 +1,6 @@
 from app.view.views import View
 from app.dao.userdao import UserDAO
+from datetime import date
 
 from time import sleep
 
@@ -12,7 +13,5 @@ class Controler:
         self.user = user
         
     def run(self):
-        if self.user.authorisation('Sale'):
-            print("menu admin")
-        else : 
-            print('accès refusé')
+        test = self.userDAO.get_all_contacts_by_user_id(4)
+        print(test)
