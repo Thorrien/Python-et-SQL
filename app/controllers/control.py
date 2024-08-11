@@ -13,5 +13,5 @@ class Controler:
         self.user = user
         
     def run(self):
-        test = self.userDAO.get_all_contacts_by_user_id(4)
+        test = self.userDAO.get_company_events(3)
         print(test)

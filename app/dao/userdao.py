@@ -1,6 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine, MetaData, inspect
-from app.models.models import User, Base, Role, Company, Event, Contact
+from app.models.models import User, Base, Role, Company, Event, Contact, Contract
 from app.utils import config
 
 
@@ -228,6 +228,15 @@ class UserDAO:
         finally:
             session.close()
     
+    def get_all_company_without_user(self):
+        session = self.Session()
+        try:
+            companys = session.query(Company).filter(Company.user_id == None).all()
+            return companys
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            session.close()
 
     def get_company(self, id: int):
         session = self.Session()
@@ -289,6 +298,17 @@ class UserDAO:
         finally:
             session.close()
             
+    def get_all_events_without_user(self):
+        session = self.Session()
+        try:
+            events = session.query(Event).filter(Event.id_user == None).all()
+            return events
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            session.close()
+            
+            
     def get_all_events(self):
         session = self.Session()
         try:
@@ -298,7 +318,7 @@ class UserDAO:
             print(f"Error: {e}")
         finally:
             session.close()
-            
+
     def update_event(self, id: int, event_date_start, event_date_end, location: str, id_user: int, attendees: int, notes):
         session = self.Session()
         try:
@@ -423,5 +443,253 @@ class UserDAO:
             session.rollback()
             print(f"Error: {e}")
             return []
+        finally:
+            session.close()
+            
+    def delete_contract(self, contract_id: int):
+        session = self.Session()
+        try:
+            contract = session.query(Contract).filter(Contract.id == contract_id).one_or_none()
+            if contract:
+                session.delete(contract)
+                session.commit()
+        except Exception as e:
+            session.rollback()
+            print(f"Error: {e}")
+        finally:
+            session.close()
+            
+    def get_contract(self, contract_id: int):
+        session = self.Session()
+        try:
+            contact = session.query(Contract).filter(Contract.id == contract_id).one_or_none()
+            return contact
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            session.close()
+            
+
+    def get_all_contract(self):
+        session = self.Session()
+        try:
+            contracts = session.query(Contract).all()
+            return contracts
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            session.close()
+
+    def get_all_contracts_by_user_id(self, user_id: int):
+        session = self.Session()
+        try:
+            contracts = session.query(Contract).filter(Contract.user_id == user_id).all()
+            return contracts
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            session.close()
+            
+    def get_all_contracts_by_company_id(self, compagny_id : int):
+        session = self.Session()
+        try:
+            contracts = session.query(Contract).filter(Contract.compagny_id == compagny_id).all()
+            return contracts
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            session.close()
+            
+    def get_all_my_contracts_sign(self, user_id : int):
+        session = self.Session()
+        try:
+            contracts = session.query(Contract).filter(Contract.user_id == user_id, Contract.sign == True).all()
+            return contracts
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            session.close()
+            
+    def get_all_contracts_without_user(self):
+        session = self.Session()
+        try:
+            contracts = session.query(Contract).filter(Contract.user_id == None).all()
+            return contracts
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            session.close()
+    
+    def get_all_contracts_without_full_paiement(self, user_id : int):
+        session = self.Session()
+        try:
+            contracts = session.query(Contract).filter(Contract.user_id == user_id, Contract.current_amont < Contract.total_amont).all()
+            return contracts
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            session.close()
+
+    def add_contract(self, compagny_id: int, user_id: int, total_amont: float, current_amont: float, sign=False):
+        session = self.Session()
+        try:
+            contract = Contract(
+                compagny_id=compagny_id,
+                user_id=user_id,
+                total_amont=total_amont,
+                current_amont=current_amont,
+                sign=sign
+            )
+            session.add(contract)
+            session.commit()
+            print(f"Event added with ID: {contract.id}")
+        except Exception as e:
+            session.rollback()
+            print(f"Error: {e}")
+        finally:
+            session.close()
+
+    def update_contract(self, id: int, compagny_id: int, user_id: int, total_amont: float, current_amont: float, sign=False):
+        session = self.Session()
+        try:
+            contract = session.query(Contract).filter(Contract.id == id).one_or_none()
+            if contract:
+                contract.compagny_id = compagny_id
+                contract.user_id = user_id
+                contract.total_amont = total_amont
+                contract.current_amont = current_amont
+                contract.sign = sign
+                session.commit()
+        except Exception as e:
+            session.rollback()
+            print(f"Error: {e}")
+        finally:
+            session.close()
+
+    def add_event_contract(self, event_id: int, contract_id: str):
+        session = self.Session()
+        try:
+            event = session.query(Event).filter(Event.id == event_id).one_or_none()
+            contract = session.query(Contract).filter(Contract.id == contract_id).one_or_none()
+            
+            if event and contract:
+                event.contracts.append(contract)
+                session.commit()
+                print(f"Event {event_id} successfully linked with contract {contract_id}")
+            else:
+                if not event:
+                    print(f"Event with ID {event_id} not found.")
+                if not contract:
+                    print(f"Contract with ID {contract_id} not found.")
+        except Exception as e:
+            session.rollback()
+            print(f"Error: {e}")
+        finally:
+            session.close()
+    
+    def modify_event_contract(self, event_id: int, old_contract_id: str, new_contract_id: str):
+        session = self.Session()
+        try:
+            # Rechercher l'événement et les contrats
+            event = session.query(Event).filter(Event.id == event_id).one_or_none()
+            old_contract = session.query(Contract).filter(Contract.id == old_contract_id).one_or_none()
+            new_contract = session.query(Contract).filter(Contract.id == new_contract_id).one_or_none()
+            
+            if event and old_contract and new_contract:
+                # Remplacer l'ancien contrat par le nouveau
+                if old_contract in event.contracts:
+                    event.contracts.remove(old_contract)
+                    event.contracts.append(new_contract)
+                    session.commit()
+                    print(f"Contract {old_contract_id} replaced with {new_contract_id} for event {event_id}")
+                else:
+                    print(f"Contract {old_contract_id} is not associated with event {event_id}")
+            else:
+                if not event:
+                    print(f"Event with ID {event_id} not found.")
+                if not old_contract:
+                    print(f"Old contract with ID {old_contract_id} not found.")
+                if not new_contract:
+                    print(f"New contract with ID {new_contract_id} not found.")
+        except Exception as e:
+            session.rollback()
+            print(f"Error: {e}")
+        finally:
+            session.close()
+    
+    def delete_event_contract(self, event_id: int, contract_id: str):
+        session = self.Session()
+        try:
+            # Rechercher l'événement et le contrat
+            event = session.query(Event).filter(Event.id == event_id).one_or_none()
+            contract = session.query(Contract).filter(Contract.id == contract_id).one_or_none()
+            
+            if event and contract:
+                # Supprimer l'association
+                if contract in event.contracts:
+                    event.contracts.remove(contract)
+                    session.commit()
+                    print(f"Contract {contract_id} removed from event {event_id}")
+                else:
+                    print(f"Contract {contract_id} is not associated with event {event_id}")
+            else:
+                if not event:
+                    print(f"Event with ID {event_id} not found.")
+                if not contract:
+                    print(f"Contract with ID {contract_id} not found.")
+        except Exception as e:
+            session.rollback()
+            print(f"Error: {e}")
+        finally:
+            session.close()
+
+    def get_contract_for_event(self, event_id: int):
+        session = self.Session()
+        try:
+            event = session.query(Event).filter(Event.id == event_id).one_or_none()
+            
+            if event:
+                return event.contracts
+            else:
+                print(f"Event with ID {event_id} not found.")
+                return None
+        except Exception as e:
+            print(f"Error: {e}")
+            return None
+        finally:
+            session.close()
+            
+    def get_event_for_contract(self, contract_id: str):
+        session = self.Session()
+        try:
+            contract = session.query(Contract).filter(Contract.id == contract_id).one_or_none()
+            
+            if contract:
+                return contract.events
+            else:
+                print(f"Contract with ID {contract_id} not found.")
+                return None
+        except Exception as e:
+            print(f"Error: {e}")
+            return None
+        finally:
+            session.close()
+            
+    def get_company_events(self, company_id: int):
+        session = self.Session()
+        try:
+            company = session.query(Company).filter(Company.id == company_id).one_or_none()
+            
+            if company:
+                events = []
+                for contract in company.contracts:
+                    events.extend(contract.events)
+                return events
+            else:
+                print(f"Company with ID {company_id} not found.")
+                return None
+        except Exception as e:
+            print(f"Error: {e}")
+            return None
         finally:
             session.close()
