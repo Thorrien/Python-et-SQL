@@ -8,7 +8,7 @@ class UserDAO:
     def __init__(self):
         self.engine = create_engine(
             f'mysql+pymysql://{config.DB_USER}:{config.DB_PASSWORD}@{config.DB_HOST}/{config.DB_NAME}',
-            echo=True
+            echo=False
         )
         self.base = Base
         self.base.metadata.create_all(self.engine)
@@ -40,6 +40,27 @@ class UserDAO:
         finally:
             session.close()
     
+    def get_all_user_with_role_name(self):
+        session = self.Session()
+        try:
+            users_with_roles = session.query(User, Role).join(Role).all()
+            result = [
+                {
+                    'user_id': user.id,
+                    'user_name': user.nom,
+                    'user_email': user.email,
+                    'role_id': role.id,
+                    'role_name': role.role
+                }
+                for user, role in users_with_roles
+            ]
+            result_sorted = sorted(result, key=lambda x: x['user_name'])
+            return result_sorted
+        except Exception as e:
+            print(f"Error: {e}")
+            return None
+        finally:
+            session.close()
 
     def get_user(self, user_id: int):
         session = self.Session()
@@ -88,14 +109,13 @@ class UserDAO:
         finally:
             session.close()
 
-    def update_user(self, user_id: int, name: str, email: str, password: str, role_id: int):
+    def update_user(self, user_id: int, name: str, email: str, role_id: int):
         session = self.Session()
         try:
             user = session.query(User).filter(User.id == user_id).one_or_none()
             if user:
                 user.nom = name
                 user.email = email
-                user.set_password(password)
                 user.role_id = role_id
                 session.commit()
         except Exception as e:

@@ -72,7 +72,7 @@ class User(Base):
         else:
             print("Niveau d'authorisation inconnu => refusé")
             return False
-
+    
 
 class Company(Base):
     __tablename__ = 'company'
