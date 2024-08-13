@@ -81,6 +81,7 @@ class Company(Base):
     user_id = Column(Integer, ForeignKey('user.id'), nullable=True)
     company_name = Column(String(255), nullable=False)
     creation_date = Column(TIMESTAMP, server_default=func.now(), nullable=True)
+    address = Column(String(255), nullable=True)
     update_date = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now(), nullable=True)
 
     user = relationship("User", back_populates="companies") 
@@ -89,7 +90,7 @@ class Company(Base):
 
 
     def __repr__(self):
-        return (f"<Company(id={self.id}, compagny_name={self.compagny_name}, update_date={self.update_date})>")
+        return (f"<Company(id={self.id}, company_name={self.company_name}, update_date={self.update_date})>")
 
 
 class Event(Base):

@@ -8,7 +8,7 @@ class UserDAO:
     def __init__(self):
         self.engine = create_engine(
             f'mysql+pymysql://{config.DB_USER}:{config.DB_PASSWORD}@{config.DB_HOST}/{config.DB_NAME}',
-            echo=True
+            echo=False
         )
         self.base = Base
         self.base.metadata.create_all(self.engine)
@@ -109,6 +109,19 @@ class UserDAO:
         finally:
             session.close()
 
+    def update_pasword_user(self, user_id: int, password: str ):
+        session = self.Session()
+        try:
+            user = session.query(User).filter(User.id == user_id).one_or_none()
+            if user:
+                user.set_password(password)
+                session.commit()
+        except Exception as e:
+            session.rollback()
+            print(f"Error: {e}")
+        finally:
+            session.close()
+
     def update_user(self, user_id: int, name: str, email: str, role_id: int):
         session = self.Session()
         try:
@@ -196,11 +209,12 @@ class UserDAO:
             session.close()
 
 
-    def add_company(self, name: str, user_id: int ):
+    def add_company(self, name: str, user_id: int, adress: str ):
         session = self.Session()
         try:
             new_company = Company(
-                compagny_name=name, 
+                company_name=name,
+                adress = adress, 
                 user_id=user_id
                 )
             session.add(new_company)
@@ -211,12 +225,13 @@ class UserDAO:
         finally:
             session.close()
 
-    def update_company(self, id: int, name: str, user_id: int ):
+    def update_company(self, id: int, name: str, address: str, user_id: int ):
         session = self.Session()
         try:
             company = session.query(Company).filter(Company.id == id).one_or_none()
             if company:
-                company.compagny_name = name
+                company.company_name = name
+                company.address = address
                 company.user_id = user_id
                 session.commit()
         except Exception as e:
