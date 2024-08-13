@@ -33,7 +33,8 @@ class Controler:
                     users = self.userDAO.get_all_user_with_role_name()
                     choix = self.view.logutilisateurs(self.user, users)
                     if choix == 'CR':
-                        pass
+                        nom, email, mot_de_passe, role = self.view.createuserview()
+                        self.userDAO.add_user(nom, email, mot_de_passe, int(role))
                     elif choix.startswith("A"):
                         id = choix[1:]
                         choix = None

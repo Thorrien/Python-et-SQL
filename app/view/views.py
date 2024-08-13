@@ -198,3 +198,52 @@ class View :
     def base(self):
         console = Console()
         console.rule("Fin de la page")
+        
+        
+    def createuserview(self):
+        console = Console()
+        console.rule(f"Création d'un nouvel utilisateur ")
+        console.print("")
+        console.print("[green] Le nom de l'utilisateur [/green]")
+        nom = str(input('==>'))
+        console.print("[green] L'Email de l'utilisateur [/green]")
+        email = str(input('==>'))
+        console.print("[green] Le Mot de passe de l'utilisateur [/green]")
+        mot_de_passe = str(input('==>'))
+        console.print("[green] Le service de l'utilisateur : 1 (Admin), 2 (Gestion), 3 (Vente), 4 (Support) [/green]")
+        role = None
+        valid_role = ["1", "2", "3", "4"]
+        while True:
+            role = input('==>')
+            if role in valid_role:
+                break
+            else:
+                console.print("[red]Choix invalide. Veuillez essayer à nouveau.[/red]")
+        
+        
+        console.rule(f"Résumé de votre saisie pour confirmation")
+        console.print("")
+        tableconfirmation = Table(box=None)
+        tableconfirmation.add_column("Type", justify="left", style="green", no_wrap=True)
+        tableconfirmation.add_column("Vos saisies", justify="left", style="white")
+        tableconfirmation.add_row("", "")
+        tableconfirmation.add_row("Nom", f"{nom}")
+        tableconfirmation.add_row("Email", f"{email}")
+        tableconfirmation.add_row("Mot de passe", f"{mot_de_passe}")
+        tableconfirmation.add_row("Service", f"{role}")
+        
+        console.print(tableconfirmation)
+        
+        console.print("")
+        console.print("-" * console.width)
+        centered_text = Text("Confirmez vous votre saisie ?", style="bold green")
+        console.print(Align.center(centered_text))
+        
+        console.print("[green] Oui ou Non [/green]")
+        valid_role = ["Oui", "Non"]
+        while True:
+            choix = input('==>')
+            if choix == "Oui":
+                return nom, email, mot_de_passe, role
+            else:
+                break

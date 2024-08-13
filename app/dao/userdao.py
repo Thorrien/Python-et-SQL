@@ -8,7 +8,7 @@ class UserDAO:
     def __init__(self):
         self.engine = create_engine(
             f'mysql+pymysql://{config.DB_USER}:{config.DB_PASSWORD}@{config.DB_HOST}/{config.DB_NAME}',
-            echo=False
+            echo=True
         )
         self.base = Base
         self.base.metadata.create_all(self.engine)
