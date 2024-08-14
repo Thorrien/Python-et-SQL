@@ -1,5 +1,5 @@
 from app.view.views import View
-
+from datetime import datetime
 class Controler:
     
     def __init__(self, user, userDAO):
@@ -19,8 +19,12 @@ class Controler:
                 choix = self.boucleUser()
             elif choix == "CL" :
                 self.boucleClient()
-            elif choix == "MO" :
-                self.view.notautorized(self.user)
+            elif choix == "CO" :
+                self.boucleContracts()
+            elif choix == "EV":
+                pass
+            elif choix == "MO":
+                pass
                 
     def boucleUser(self):
         if self.user.authorisation('Admin') or self.user.authorisation('Gestion'):
@@ -110,15 +114,8 @@ class Controler:
                     while choix not in ['LIST', 'RET', 'QUIT', 'SUPPRIMER']:
                         company = self.userDAO.get_company(id)
                         contacts = self.userDAO.get_all_contact_by_company_id(id)
-                        contrats = self.userDAO.get_all_contracts_by_company_id(id)
-                        events = []
-                        for contrat in contrats:
-                            tempo = None
-                            tempo = self.userDAO.get_event_for_contract(contrat.id)
-                            for element in tempo : 
-                                events.append(element)
                         choix = None
-                        choix = self.view.totalViewCompagny(self.user, company, contacts, contrats, events)
+                        choix = self.view.totalViewCompagny(self.user, company, contacts)
                         if choix.startswith("A"):
                             id_contact = choix[1:]
                         else: 
@@ -174,3 +171,99 @@ class Controler:
                             return choix
                         else: 
                             print("commande inconnue")
+                            
+    def boucleContracts(self):
+        if self.user.authorisation('Admin') or self.user.authorisation('Gestion') or self.user.authorisation('Sale') or self.user.authorisation('Support'):
+            choix = None
+            while choix not in ['RET', 'QUIT']:
+                contrats = self.userDAO.get_all_contract()
+                supports = self.userDAO.get_user_by_role(4)
+                choix = self.view.logcontracts(self.user, contrats, self.userDAO)
+                if choix.startswith("CR"):
+                    id = choix[2:]
+                    company = self.userDAO.get_company(id)
+                    total_amont, current_amont, sign = self.view.createcontract(self.user, company)
+                    if sign is True: 
+                        self.userDAO.add_contract(company.id, self.user.id, total_amont, current_amont, 1)
+                    else : 
+                        self.userDAO.add_contract(company.id, self.user.id, total_amont, current_amont, 0)
+
+                if choix.startswith("A"):
+                    id = int(choix[1:])
+                    choix = None
+                    contrat = contrats[id]
+                    contratId = contrat.id
+                    while choix not in ['RET', 'QUIT']:
+                        contrat = self.userDAO.get_contract(contratId)
+                        company = self.userDAO.get_company(contrat.compagny_id)
+                        events = self.userDAO.get_event_for_contract(contrat.id)
+                        choix = self.view.contractview(self.user, company, contrat, events, self.userDAO)
+                        if choix.startswith("A"):
+                            id_event = choix[1:]
+                            choix = None
+                            while choix not in ['LIST', 'RET', 'QUIT']:
+                                event = self.userDAO.get_event(id_event)
+                                choix = self.view.eventview(self.user, event, self.userDAO)
+                                new_data = choix[3:]
+                                if choix == "SUPPRIMER" :
+                                    pass
+                                elif choix == "RET" or choix == "QUIT":
+                                    return choix
+                                elif choix.startswith("MS"):
+                                    self.userDAO.update_event(event.id, datetime.strptime(new_data, "%d/%m/%Y %H:%M"), event.event_date_end, event.location, event.id_user, event.attendees, event.notes)
+                                elif choix.startswith("ME"):
+                                    self.userDAO.update_event(event.id, event.event_date_start, datetime.strptime(new_data, "%d/%m/%Y %H:%M"), event.location, event.id_user, event.attendees, event.notes)
+                                elif choix.startswith("ML"):
+                                    self.userDAO.update_event(event.id, event.event_date_start, event.event_date_end, new_data, event.id_user, event.attendees, event.notes)
+                                elif choix.startswith("MA"):
+                                    self.userDAO.update_event(event.id, event.event_date_start, event.event_date_end, event.location, event.id_user, new_data, event.notes)
+                                elif choix.startswith("MN"):
+                                    self.userDAO.update_event(event.id, event.event_date_start, event.event_date_end, event.location, event.id_user, event.attendees, new_data)
+                        else: 
+                            new_data = choix[3:]
+                        if choix == "CR":
+                            if self.user.authorisation('Sale') and self.user.id == company.user_id :
+                                event_date_start, event_date_end, location, support_id, attendees, notes = self.view.createevent(company, self.user, supports)
+                                eventid = self.userDAO.add_event(event_date_start, event_date_end, location, support_id, attendees, notes)
+                                self.userDAO.add_event_contract(eventid, contrat.id)
+                            else: 
+                                self.view.notautorized(self.user)
+                        elif choix == "SUPPRIMER":
+                            if self.user.authorisation('Sale') and self.user.id == company.user_id :
+                                self.userDAO.delete_contract(contrat.id)
+                            else: 
+                                self.view.notautorized(self.user)
+                        elif choix.startswith("MT "):
+                            if self.user.authorisation('Sale') and self.user.id == company.user_id :
+                                self.userDAO.update_contract(contrat.id, company.id, self.user.id, float(new_data), contrat.current_amont, contrat.sign)
+                            else: 
+                                self.view.notautorized(self.user)
+                        elif choix.startswith("MV "):
+                            if self.user.authorisation('Sale') and self.user.id == company.user_id :
+                                self.userDAO.update_contract(contrat.id, company.id, self.user.id, contrat.total_amont, float(new_data), contrat.sign)
+                            else: 
+                                self.view.notautorized(self.user)
+                        elif choix == "MS SI":
+                            if self.user.authorisation('Sale') and self.user.id == company.user_id :
+                                self.userDAO.update_contract(contrat.id, company.id, self.user.id, contrat.total_amont, contrat.current_amont, 1)
+                            else: 
+                                self.view.notautorized(self.user)
+                        elif choix == "MS NS":
+                            if self.user.authorisation('Sale') and self.user.id == company.user_id :
+                                self.userDAO.update_contract(contrat.id, company.id, self.user.id, contrat.total_amont, contrat.current_amont, 0)
+                            else: 
+                                self.view.notautorized(self.user)
+                        elif choix == "QUIT":
+                            return choix
+                        elif choix == "RET":
+                            return choix
+                elif choix.startswith("E") :
+                    id = choix[1:]
+                    choix = None
+                    while choix not in ['LIST', 'RET', 'QUIT']:
+                        company = self.userDAO.get_company(id)
+                        contacts = self.userDAO.get_all_contact_by_company_id(id)
+                        choix = None
+                        choix = self.view.LiteViewCompagny(self.user, company, contacts)
+                elif choix == "QUIT":
+                    return choix

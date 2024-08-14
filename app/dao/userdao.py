@@ -307,6 +307,7 @@ class UserDAO:
             session.add(new_event)
             session.commit()
             print(f"Event added with ID: {new_event.id}")
+            return new_event.id
         except Exception as e:
             session.rollback()
             print(f"Error: {e}")

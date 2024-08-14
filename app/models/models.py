@@ -43,7 +43,7 @@ class User(Base):
     role = relationship("Role", back_populates="users")
     companies = relationship("Company", back_populates="user")
     events = relationship("Event", back_populates="user")
-    contracts = relationship("Contract", back_populates="user")  # Ajoutez cette ligne
+    contracts = relationship("Contract", back_populates="user") 
 
     
     def __repr__(self):
