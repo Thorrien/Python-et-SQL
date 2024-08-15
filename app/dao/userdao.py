@@ -1,6 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine, MetaData, inspect
-from app.models.models import User, Base, Role, Company, Event, Contact, Contract
+from app.models.models import User, event_contract, Base, Role, Company, Event, Contact, Contract
 from app.utils import config
 
 
@@ -724,6 +724,53 @@ class UserDAO:
             else:
                 print(f"Company with ID {company_id} not found.")
                 return None
+        except Exception as e:
+            print(f"Error: {e}")
+            return None
+        finally:
+            session.close()
+    
+    def get_all_event_details_with_company(self):
+        session = self.Session()
+        try:
+            results = session.query(
+                Event.id.label('event_id'),
+                Event.event_date_start,
+                Event.event_date_end,
+                Event.location,
+                Event.attendees,
+                Event.id_user,
+                Event.notes,
+                Contract.id.label('contract_id'),
+                Contract.total_amont,
+                Contract.current_amont,
+                Company.id.label('company_id'),
+                Company.company_name,
+                Company.address
+            ).join(event_contract, Event.id == event_contract.c.event_id) \
+             .join(Contract, event_contract.c.contract_id == Contract.id) \
+             .join(Company, Contract.compagny_id == Company.id) \
+             .all()
+
+            event_details_list = []
+            for result in results:
+                event_details_list.append({
+                    "event_id": result.event_id,
+                    "event_date_start": result.event_date_start,
+                    "event_date_end": result.event_date_end,
+                    "location": result.location,
+                    "attendees": result.attendees,
+                    "id_user": result.id_user,
+                    "notes": result.notes,
+                    "contract_id": result.contract_id,
+                    "total_amont": result.total_amont,
+                    "current_amont": result.current_amont,
+                    "company_id": result.company_id,
+                    "company_name": result.company_name,
+                    "address": result.address
+                })
+
+            return event_details_list
         except Exception as e:
             print(f"Error: {e}")
             return None

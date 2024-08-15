@@ -22,8 +22,10 @@ class Controler:
             elif choix == "CO" :
                 self.boucleContracts()
             elif choix == "EV":
-                pass
+                self.boucleEvents()
             elif choix == "MO":
+                pass
+            elif choix == "SU":
                 pass
                 
     def boucleUser(self):
@@ -265,5 +267,71 @@ class Controler:
                         contacts = self.userDAO.get_all_contact_by_company_id(id)
                         choix = None
                         choix = self.view.LiteViewCompagny(self.user, company, contacts)
+                elif choix.startswith("S") :
+                    id = int(choix[1:])
+                    choix = None
+                    contrat = contrats[id]
+                    contratId = contrat.id
+                    self.userDAO.delete_contract(contratId)
                 elif choix == "QUIT":
                     return choix
+                
+    def boucleEvents(self):
+        events = self.userDAO.get_all_event_details_with_company()
+        if self.user.authorisation('Admin') or self.user.authorisation('Gestion') or self.user.authorisation('Sale') or self.user.authorisation('Support'):
+            choix = None
+            while choix not in ['RET', 'QUIT']:
+                if self.user.authorisation('Support'):
+                    choix = self.view.myMensualEvents(self.user, events)
+                else:
+                    choix = self.view.TotalEvents(self.user, events)
+                if choix == "TO":
+                    while choix not in ['RET', 'QUIT']:
+                        choix = None
+                        choix = self.view.myTotalEvents(self.user, events)
+                        if choix.startswith("A"):
+                            choix = self.boucleSoloEvents(choix)
+                        elif choix == "TT":
+                            while choix not in ['RET', 'QUIT']:
+                                choix = None
+                                choix = self.view.TotalEvents(self.user, events)
+                                if choix.startswith("A"):
+                                    choix = self.boucleSoloEvents(choix)
+                                else: 
+                                    return choix
+                elif choix == "TT":
+                    while choix not in ['RET', 'QUIT']:
+                        choix = None
+                        choix = self.view.TotalEvents(self.user, events)
+                        if choix.startswith("A"):
+                            choix = self.boucleSoloEvents(choix)
+                        else: 
+                            return choix
+                elif choix.startswith("A"):
+                    choix = self.boucleSoloEvents(choix)
+                else: 
+                    return choix
+
+    def boucleSoloEvents(self, choix):
+        id_event = choix[1:]
+        choix = None
+        while choix not in ['LIST', 'RET', 'QUIT']:
+            event = self.userDAO.get_event(id_event)
+            choix = self.view.eventview(self.user, event, self.userDAO)
+            new_data = choix[3:]
+            if choix == "SUPPRIMER" :
+                pass
+            elif choix == "RET" or choix == "QUIT":
+                return choix
+            elif choix.startswith("MS"):
+                self.userDAO.update_event(event.id, datetime.strptime(new_data, "%d/%m/%Y %H:%M"), event.event_date_end, event.location, event.id_user, event.attendees, event.notes)
+            elif choix.startswith("ME"):
+                self.userDAO.update_event(event.id, event.event_date_start, datetime.strptime(new_data, "%d/%m/%Y %H:%M"), event.location, event.id_user, event.attendees, event.notes)
+            elif choix.startswith("ML"):
+                self.userDAO.update_event(event.id, event.event_date_start, event.event_date_end, new_data, event.id_user, event.attendees, event.notes)
+            elif choix.startswith("MA"):
+                self.userDAO.update_event(event.id, event.event_date_start, event.event_date_end, event.location, event.id_user, new_data, event.notes)
+            elif choix.startswith("MN"):
+                self.userDAO.update_event(event.id, event.event_date_start, event.event_date_end, event.location, event.id_user, event.attendees, new_data)
+            else: 
+                return choix

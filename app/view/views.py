@@ -9,7 +9,8 @@ from datetime import datetime
 from time import sleep
 import re
 from rich.columns import Columns
-
+import calendar
+import locale
 
 class View :
     def __init__(self):
@@ -156,7 +157,7 @@ class View :
             valid_choices.append(f"S{element}")
         
         while True:
-            console.print("Votre choix [grey]( CR, A18, D9 ...)[/grey] :")
+            console.print("Votre choix [#AAAAAA]( CR, A18, D9 ...)[/#AAAAAA] :")
             choix = input('==>')
             if choix in valid_choices:
                 return choix
@@ -201,7 +202,7 @@ class View :
         valid_choices_with_id = ["NO", "EM", "RE"]
         console.print("")
         while True:
-            console.print("Votre choix [grey]( SE AD, NO Eric, EM martin@tot.fr ...)[/grey] :")
+            console.print("Votre choix [#AAAAAA]( SE AD, NO Eric, EM martin@tot.fr ...)[/#AAAAAA] :")
             choix = input('==>')
             if choix in valid_choices:
                 return choix
@@ -328,10 +329,10 @@ class View :
             tablechoix.add_row("M<id>", "Modifier les informations d'une entreprise <id>")
             tablechoix.add_row("S<id>", "[blue]Suprimer définitivement [/blue]l'entreprise <id>")
         else: 
-            tablechoix.add_row("[red][strike]CR[/red][/strike]", "[red]Créer une nouvelle entreprise[/red]")
+            tablechoix.add_row("[red][strike]CR[/red][/strike]", "[red]Créer une nouvelle entreprise[/red]🔒")
             tablechoix.add_row("A<id>", "Afficher les contacts d'une entreprise <id>")
-            tablechoix.add_row("[red][strike]M<id>[/red][/strike]", "[red]Modifier les informations d'une entreprise <id>[/red]")
-            tablechoix.add_row("[red][strike]S<id>[/red][/strike]", "[red]Suprimer définitivement l'entreprise <id>[/red]")
+            tablechoix.add_row("[red][strike]M<id>[/red][/strike]", "[red]Modifier les informations d'une entreprise <id>[/red]🔒")
+            tablechoix.add_row("[red][strike]S<id>[/red][/strike]", "[red]Suprimer définitivement l'entreprise <id>[/red]🔒")
         tablechoix.add_row("RET", "Retour au menu principal")
         tablechoix.add_row("QUIT", "Quitter l'application")
         console.print("")
@@ -358,7 +359,7 @@ class View :
             invalid_choices.append(f"S{element}")
         
         while True:
-            console.print("Votre choix [grey]( CR, A18, D9 ...)[/grey] :")
+            console.print("Votre choix [#AAAAAA]( CR, A18, D9 ...)[/#AAAAAA] :")
             choix = input('==>')
             if choix in valid_choices:
                 return choix
@@ -463,9 +464,9 @@ class View :
             if company.user_id is None: 
                 tablechoix.add_row("RECUPERER", "Récupérer le dossier de l'entreprise")
             tablechoix.add_row("A<id>", "Afficher le contact <id> de l'entreprise")
-            tablechoix.add_row("[red][strike]MN <Nouvelle donnée>[/red][/strike]", "[red]Modifier le nom de l'entreprise par <Nouvelle donnée>[/red]")
-            tablechoix.add_row("[red][strike]MA <Nouvelle donnée>[/red][/strike]", "[red]Modifier l'adresse de l'entreprise par <Nouvelle donnée>[/red]")
-            tablechoix.add_row("[red][strike]SUPPRIMER[/red][/strike]", "[red]Suprimer définitivement l'entreprise et ses contacts[/red]")
+            tablechoix.add_row("[red][strike]MN <Nouvelle donnée>[/red][/strike]", "[red]Modifier le nom de l'entreprise par <Nouvelle donnée>[/red]🔒")
+            tablechoix.add_row("[red][strike]MA <Nouvelle donnée>[/red][/strike]", "[red]Modifier l'adresse de l'entreprise par <Nouvelle donnée>[/red]🔒")
+            tablechoix.add_row("[red][strike]SUPPRIMER[/red][/strike]", "[red]Suprimer définitivement l'entreprise et ses contacts[/red]🔒")
             tablechoix.add_row("RET", "Retour au menu principal")
             tablechoix.add_row("QUIT", "Quitter le programme")
             console.print("") 
@@ -604,7 +605,7 @@ class View :
         valid_choices_with_id = ["NO", "EM", "TE"]
         console.print("")
         while True:
-            console.print("Votre choix [grey]( SI Non, NO Eric, EM martin@tot.fr ...)[/grey] :")
+            console.print("Votre choix [#AAAAAA]( SI Non, NO Eric, EM martin@tot.fr ...)[/#AAAAAA] :")
             choix = input('==>')
             if choix in valid_choices:
                 return choix
@@ -689,10 +690,10 @@ class View :
             tablechoix.add_row("E<id>", "Afficher le détail d'une entreprise<id>")
             tablechoix.add_row("S<id>", "[blue]Suprimer définitivement [/blue]le contrat<id>")
         else: 
-            tablechoix.add_row("[red][strike]CR<id>[/red][/strike]", "[red]Créer un nouveau contrat pour la société <id>[/red]")
+            tablechoix.add_row("[red][strike]CR<id>[/red][/strike]", "[red]Créer un nouveau contrat pour la société <id>[/red]🔒")
             tablechoix.add_row("A<id>", "Afficher le détail d'un contrat <id>")
             tablechoix.add_row("E<id>", "Afficher le détail d'une entreprise<id>")
-            tablechoix.add_row("[red][strike]S<id>[/red][/strike]", "[red]Suprimer définitivement le contrat<id>[/red]")
+            tablechoix.add_row("[red][strike]S<id>[/red][/strike]", "[red]Suprimer définitivement le contrat<id>[/red]🔒")
         tablechoix.add_row("RET", "Retour au menu principal")
         tablechoix.add_row("QUIT", "Quitter l'application")
         console.print("")
@@ -725,7 +726,7 @@ class View :
             invalid_choices.append(f"CR{element}")
         
         while True:
-            console.print("Votre choix [grey]( CR, A18, E9 ...)[/grey] :")
+            console.print("Votre choix [#AAAAAA]( CR, A18, E9 ...)[/#AAAAAA] :")
             choix = input('==>')
             if choix in valid_choices:
                 return choix
@@ -868,12 +869,12 @@ class View :
             tablechoix.add_row("QUIT", "Quitter le programme")
             console.print("")
         else:
-            tablechoix.add_row("[red][strike]CR[/red][/strike]", "[red]Créer un nouvel évènement[/red]")
+            tablechoix.add_row("[red][strike]CR[/red][/strike]", "[red]Créer un nouvel évènement[/red]🔒")
             tablechoix.add_row("A<id>", "Afficher le détail de l'évènement ")
-            tablechoix.add_row("[red][strike]MT <Nouvelle donnée>[/red][/strike]", "[red]Modifier le montant total du contrat par <Nouvelle donnée>[/red]")
-            tablechoix.add_row("[red][strike]MV <Nouvelle donnée>[/red][/strike]", "[red]Modifier le montant versé du contrat par <Nouvelle donnée>[/red]")
-            tablechoix.add_row("[red][strike]MS SI/NS[/red][/strike]", "[red]Modifier l'état du contrat : SI = Signé / NS = Non Signé[/red]")
-            tablechoix.add_row("[red][strike]SUPPRIMER[/red][/strike]", "[red]Suprimer définitivement le contrat[/red]")
+            tablechoix.add_row("[red][strike]MT <Nouvelle donnée>[/red][/strike]", "[red]Modifier le montant total du contrat par <Nouvelle donnée>[/red]🔒")
+            tablechoix.add_row("[red][strike]MV <Nouvelle donnée>[/red][/strike]", "[red]Modifier le montant versé du contrat par <Nouvelle donnée>[/red]🔒")
+            tablechoix.add_row("[red][strike]MS SI/NS[/red][/strike]", "[red]Modifier l'état du contrat : SI = Signé / NS = Non Signé[/red]🔒")
+            tablechoix.add_row("[red][strike]SUPPRIMER[/red][/strike]", "[red]Suprimer définitivement le contrat[/red]🔒")
             tablechoix.add_row("RET", "Retour au menu principal")
             tablechoix.add_row("QUIT", "Quitter le programme")
             console.print("")
@@ -903,7 +904,7 @@ class View :
                 valid_choices.append(f"A{element}")
                 
         while True:
-            console.print("Votre choix [grey]( CR, A18, D9 ...)[/grey] :")
+            console.print("Votre choix [#AAAAAA]( CR, A18, D9 ...)[/#AAAAAA] :")
             choix = input('==>')
             if choix in valid_choices:
                 return choix
@@ -1040,12 +1041,12 @@ class View :
             tablechoix.add_row("MN <Nouvelle Donnée>", "Modifier les notes par <Nouvelle Donnée>")
             tablechoix.add_row("SUPPRIMER", "[blue]Supprime définitivement[/blue] l'utilisateur de la base de donnée")
         else : 
-            tablechoix.add_row("[red][strike]MS <Nouvelle Donnée>[/red][/strike]", "[red]Modifier la date de début <Nouvelle Donnée au format : JJ/MM/AAAA HH:MM>[/red]")
-            tablechoix.add_row("[red][strike]ME <Nouvelle Donnée>[/red][/strike]", "[red]Modifier la date de fin <Nouvelle Donnée au format : JJ/MM/AAAA HH:MM>[/red]")
-            tablechoix.add_row("[red][strike]ML <Nouvelle Donnée>[/red][/strike]", "[red]Modifier la localisation par <Nouvelle Donnée>[/red]")
-            tablechoix.add_row("[red][strike]MA <Nouvelle Donnée>[/red][/strike]", "[red]Modifier le nombre de participants par <Nouvelle Donnée>[/red]")
-            tablechoix.add_row("[red][strike]MN <Nouvelle Donnée>[/red][/strike]", "[red]Modifier les notes par <Nouvelle Donnée>[/red]")
-            tablechoix.add_row("[red][strike]SUPPRIMER[/red][/strike]", "[red]Supprime définitivement l'utilisateur de la base de donnée[/red]")
+            tablechoix.add_row("[red][strike]MS <Nouvelle Donnée>[/red][/strike]", "[red]Modifier la date de début <Nouvelle Donnée au format : JJ/MM/AAAA HH:MM>[/red]🔒")
+            tablechoix.add_row("[red][strike]ME <Nouvelle Donnée>[/red][/strike]", "[red]Modifier la date de fin <Nouvelle Donnée au format : JJ/MM/AAAA HH:MM>[/red]🔒")
+            tablechoix.add_row("[red][strike]ML <Nouvelle Donnée>[/red][/strike]", "[red]Modifier la localisation par <Nouvelle Donnée>[/red]🔒")
+            tablechoix.add_row("[red][strike]MA <Nouvelle Donnée>[/red][/strike]", "[red]Modifier le nombre de participants par <Nouvelle Donnée>[/red]🔒")
+            tablechoix.add_row("[red][strike]MN <Nouvelle Donnée>[/red][/strike]", "[red]Modifier les notes par <Nouvelle Donnée>[/red]🔒")
+            tablechoix.add_row("[red][strike]SUPPRIMER[/red][/strike]", "[red]Supprime définitivement l'utilisateur de la base de donnée[/red]🔒")
         tablechoix.add_row("LIST", "Retour à la liste des utilisateurs")
         tablechoix.add_row("RET", "Retour au menu principal")
         tablechoix.add_row("QUIT", "quitter l'application")
@@ -1061,7 +1062,7 @@ class View :
         console.print("")
         pattern = re.compile(r"^\d{2}/\d{2}/\d{4} \d{2}:\d{2}$")
         while True:
-            console.print("Votre choix [grey]( MA 563, MN Mes notes, MS 25/12/2025 15:50 ...)[/grey] :")
+            console.print("Votre choix [#AAAAAA]( MA 563, MN Mes notes, MS 25/12/2025 15:50 ...)[/#AAAAAA] :")
             choix = input('==>')
             if choix in valid_choices:
                 return choix
@@ -1139,9 +1140,247 @@ class View :
         console.print("")
 
         while True:
-            console.print("Votre choix [grey]( LIST, RET, QUIT ...)[/grey] :")
+            console.print("Votre choix [#AAAAAA]( LIST, RET, QUIT ...)[/#AAAAAA] :")
             choix = input('==>')
             if choix in valid_choices:
                 return choix
             else:
                 console.print("[red]Choix invalide. Veuillez essayer à nouveau.[/red]")
+
+    def myMensualEvents(self, user, events):
+        if user.authorisation('Support'):
+            console = Console()
+            console.rule(f"Détail des évènements du mois")
+            console.print("") 
+            current_date = datetime.now()
+            current_month = datetime.now().month
+            current_year = datetime.now().year
+            current_day = datetime.now().day
+            if current_date.month == 12:
+                next_month = 1
+                next_year = current_date.year + 1
+            else:
+                next_month = current_date.month + 1
+                next_year = current_date.year
+            events_id = []
+            events_days = []
+            valid_choices = ["TO", "TT", "RET", "QUIT"]
+            events_du_mois = [
+                event for event in events
+                if event['event_date_start'].month == current_month and event['event_date_start'].year == current_year
+            ]
+            events_du_mois_apres = [
+                event for event in events
+                if event['event_date_start'].month == next_month and event['event_date_start'].year == next_year
+            ]
+            
+            def create_table(liste, car):
+                if car == "MY":
+                    table = Table(title=f"Evènements du mois {calendar.month_name[current_month]}", box=None)
+                else:
+                    table = Table(title=f"Evènements du mois {calendar.month_name[next_month]}", box=None)
+                table.add_column("id", justify="left", style="green", no_wrap=True)
+                table.add_column("Entreprise", justify="left", style="white", no_wrap=True)
+                table.add_column("Date de début", justify="left", style="white", no_wrap=True )
+                table.add_column("Participants", justify="left", style="white")
+                table.add_row("", "")
+                for event in liste:
+                    if (event["id_user"] if isinstance(event, dict) else event.id_user) == user.id:
+                        event_id = event["event_id"] if isinstance(event, dict) else event.event_id
+                        valid_choices.append(f"A{event_id}")
+                        company_name = event["company_name"] if isinstance(event, dict) else event.company_name
+                        event_date_start = event["event_date_start"] if isinstance(event, dict) else event.event_date_start
+                        attendees = event["attendees"] if isinstance(event, dict) else event.attendees
+                        table.add_row(str(event_id), company_name, event_date_start.strftime("%Y-%m-%d %H:%M:%S"),str(attendees))                
+                        if car == "MY":
+                            event_day = int(event_date_start.day)
+                            events_days.append(int(event_day))
+                return table
+            table1 = create_table(events_du_mois, "MY")
+            table2 = create_table(events_du_mois_apres, "MA")
+
+            locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')
+            cal = calendar.monthcalendar(current_year, current_month)
+            console.print(f"[bold underline]Calendrier  {calendar.month_name[current_month]} :[/]")
+            console.print("Lu Ma Me Je Ve Sa Di", style="bold green")
+            for week in cal:
+                line = Text()
+                for day in week:
+                    if day == 0:
+                        line.append("   ")
+                    elif day == current_day:
+                        line.append(f"{day:2} ", style="bold white on blue")
+                    elif day in events_days:
+                        line.append(f"{day:2} ", style="bold green")
+                    else:
+                        line.append(f"{day:2} ", style="white")
+                console.print(line)
+                
+                
+
+            vertical_line = Text("\n".join("|" for _ in range(10)), style="green")
+            console.print("-" * console.width)
+            
+            console.print(Columns([table1, table2], padding=(0, 10)))
+            console.print("")
+            console.print("-" * console.width)
+            centered_text = Text("Choix d'actions", style="bold green")
+            console.print(Align.center(centered_text))
+            
+            tablechoix = Table(box=None)
+            tablechoix.add_column("Choix", justify="left", style="green", no_wrap=True)
+            tablechoix.add_column("Description", justify="left", style="white")
+            
+            tablechoix.add_row("", "")
+            tablechoix.add_row("TO", "Voir tous vos évènements")
+            tablechoix.add_row("TT", "Voir tous les évènements")
+            tablechoix.add_row("A<id>", "Afficher le détail de l'évènement <id>")
+            tablechoix.add_row("RET", "Retour au menu principal")
+            tablechoix.add_row("QUIT", "Quitter le programme")
+            console.print("")
+
+            
+            console.print(tablechoix)
+            console.print("")
+
+            while True:
+                console.print("Votre choix [#AAAAAA]( TO, TT, A5 ...)[/#AAAAAA] :")
+                choix = input('==>')
+                if choix in valid_choices:
+                    return choix
+                else:
+                    console.print("[red]Choix invalide. Veuillez essayer à nouveau.[/red]")
+
+
+    def myTotalEvents(self, user, events):
+        if user.authorisation('Support'):
+            console = Console()
+            console.rule(f"Détail de tous vos évènements")
+            console.print("") 
+
+            events_id = []
+            valid_choices = ["TT", "RET", "QUIT"]
+            myEvents = [
+                event for event in events
+                if event['id_user']  == user.id
+            ]
+            
+            third = len(myEvents) // 3
+            first_third = myEvents[:third]
+            second_third = myEvents[third:2*third]
+            third_third = myEvents[2*third:]
+        
+            def create_table(liste):
+                table = Table(title=f"Evènements", box=None)
+                table.add_column("id", justify="left", style="green", no_wrap=True)
+                table.add_column("Entreprise", justify="left", style="white", no_wrap=True)
+                table.add_column("Date de début", justify="left", style="white", no_wrap=True )
+                table.add_row("", "")
+                for event in liste:
+                    if (event["id_user"] if isinstance(event, dict) else event.id_user) == user.id:
+                        event_id = event["event_id"] if isinstance(event, dict) else event.event_id
+                        valid_choices.append(f"A{event_id}")
+                        company_name = event["company_name"] if isinstance(event, dict) else event.company_name
+                        event_date_start = event["event_date_start"] if isinstance(event, dict) else event.event_date_start
+                        table.add_row(str(event_id), company_name, event_date_start.strftime("%Y-%m-%d %H:%M:%S"))
+                return table
+            
+            table1 = create_table(first_third)
+            table2 = create_table(second_third)
+            table3 = create_table(third_third)
+
+            console.print("-" * console.width)
+            
+            console.print(Columns([table1, table2, table3], padding=(0, 5)))
+            console.print("")
+            console.print("-" * console.width)
+            centered_text = Text("Choix d'actions", style="bold green")
+            console.print(Align.center(centered_text))
+            
+            tablechoix = Table(box=None)
+            tablechoix.add_column("Choix", justify="left", style="green", no_wrap=True)
+            tablechoix.add_column("Description", justify="left", style="white")
+            
+            tablechoix.add_row("", "")
+            tablechoix.add_row("TT", "Voir tous les évènements")
+            tablechoix.add_row("A<id>", "Afficher le détail de l'évènement <id>")
+            tablechoix.add_row("RET", "Retour au menu principal")
+            tablechoix.add_row("QUIT", "Quitter le programme")
+            console.print("")
+
+            console.print(tablechoix)
+            console.print("")
+
+            while True:
+                console.print("Votre choix [#AAAAAA](TT, A5 ...)[/#AAAAAA] :")
+                choix = input('==>')
+                if choix in valid_choices:
+                    return choix
+                else:
+                    console.print("[red]Choix invalide. Veuillez essayer à nouveau.[/red]")
+
+    
+    def TotalEvents(self, user, events):
+        console = Console()
+        console.rule(f"Détail de tous les évènements ")
+        console.print("") 
+
+        events_id = []
+        valid_choices = ["RET", "QUIT"]
+
+        
+        third = len(events) // 3
+        first_third = events[:third]
+        second_third = events[third:2*third]
+        third_third = events[2*third:]
+    
+        def create_table(liste):
+            table = Table(title=f"Evènements", box=None)
+            table.add_column("id", justify="left", style="white", no_wrap=True)
+            table.add_column("Entreprise", justify="left", style="white", no_wrap=True)
+            table.add_column("Date de début", justify="left", style="white", no_wrap=True )
+            table.add_row("", "")
+            for event in liste:
+                event_id = event["event_id"] if isinstance(event, dict) else event.event_id
+                valid_choices.append(f"A{event_id}") 
+                company_name = event["company_name"] if isinstance(event, dict) else event.company_name
+                event_date_start = event["event_date_start"] if isinstance(event, dict) else event.event_date_start
+                if (event["id_user"] if isinstance(event, dict) else event.id_user) == user.id:
+                    table.add_row(str(event_id), company_name, event_date_start.strftime("%Y-%m-%d %H:%M:%S"))
+                else:
+                    table.add_row(f"{str(event_id)}🔒", company_name, event_date_start.strftime("%Y-%m-%d %H:%M:%S"))
+            return table
+        
+        table1 = create_table(first_third)
+        table2 = create_table(second_third)
+        table3 = create_table(third_third)
+
+        console.print("-" * console.width)
+        
+        console.print(Columns([table1, table2, table3], padding=(0, 5)))
+        console.print("")
+        console.print("-" * console.width)
+        centered_text = Text("Choix d'actions", style="bold green")
+        console.print(Align.center(centered_text))
+        
+        tablechoix = Table(box=None)
+        tablechoix.add_column("Choix", justify="left", style="green", no_wrap=True)
+        tablechoix.add_column("Description", justify="left", style="white")
+        
+        tablechoix.add_row("", "")
+        tablechoix.add_row("A<id>", "Afficher le détail de l'évènement <id>")
+        tablechoix.add_row("RET", "Retour au menu principal")
+        tablechoix.add_row("QUIT", "Quitter le programme")
+        console.print("")
+
+        console.print(tablechoix)
+        console.print("")
+
+        while True:
+            console.print("Votre choix [#AAAAAA](RET, A5 ...)[/#AAAAAA] :")
+            choix = input('==>')
+            if choix in valid_choices:
+                return choix
+            else:
+                console.print("[red]Choix invalide. Veuillez essayer à nouveau.[/red]")
+
