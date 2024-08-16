@@ -626,7 +626,7 @@ class View :
                 return choix
             else:
                 console.print("[red]Choix invalide. Veuillez essayer à nouveau.[/red]")
-                
+
     def logcontracts( self, user, contrats, userDAO):
         console = Console()
         console.rule("Contrats")
@@ -1052,14 +1052,14 @@ class View :
             tablechoix.add_row("ML <Nouvelle Donnée>", "Modifier la localisation par <Nouvelle Donnée>")
             tablechoix.add_row("MA <Nouvelle Donnée>", "Modifier le nombre de participants par <Nouvelle Donnée>")
             tablechoix.add_row("MN <Nouvelle Donnée>", "Modifier les notes par <Nouvelle Donnée>")
-            tablechoix.add_row("SUPPRIMER", "[blue]Supprime définitivement[/blue] l'utilisateur de la base de donnée")
+            tablechoix.add_row("SUPPRIMER", "[blue]Supprime définitivement[/blue] l'évènement ")
         else : 
             tablechoix.add_row("[red][strike]MS <Nouvelle Donnée>[/red][/strike]", "[red]Modifier la date de début <Nouvelle Donnée au format : JJ/MM/AAAA HH:MM>[/red]🔒")
             tablechoix.add_row("[red][strike]ME <Nouvelle Donnée>[/red][/strike]", "[red]Modifier la date de fin <Nouvelle Donnée au format : JJ/MM/AAAA HH:MM>[/red]🔒")
             tablechoix.add_row("[red][strike]ML <Nouvelle Donnée>[/red][/strike]", "[red]Modifier la localisation par <Nouvelle Donnée>[/red]🔒")
             tablechoix.add_row("[red][strike]MA <Nouvelle Donnée>[/red][/strike]", "[red]Modifier le nombre de participants par <Nouvelle Donnée>[/red]🔒")
             tablechoix.add_row("[red][strike]MN <Nouvelle Donnée>[/red][/strike]", "[red]Modifier les notes par <Nouvelle Donnée>[/red]🔒")
-            tablechoix.add_row("[red][strike]SUPPRIMER[/red][/strike]", "[red]Supprime définitivement l'utilisateur de la base de donnée[/red]🔒")
+            tablechoix.add_row("[red][strike]SUPPRIMER[/red][/strike]", "[red]Supprime définitivement l'évènement [/red]🔒")
         tablechoix.add_row("LIST", "Retour à la liste des utilisateurs")
         tablechoix.add_row("RET", "Retour au menu principal")
         tablechoix.add_row("QUIT", "quitter l'application")
