@@ -1,17 +1,19 @@
 from app.view.views import View
 from datetime import datetime
+
+
 class Controler:
-    
+
     def __init__(self, user, userDAO):
         self.view = View()
         self.userDAO = userDAO
         self.user = user
-        
+
     def run(self):
         text = self.userDAO.get_text(1)
         self.view.logtrue(self.user, text.data)
         self.gestboucle()
-        
+
     def gestboucle(self):
         choix = None
         while choix != "QUIT":
@@ -36,8 +38,8 @@ class Controler:
                         self.boucleAttributions()
                     else:
                         self.view.notautorized(self.user)
-    
-    def boucleAttributions(self):   
+
+    def boucleAttributions(self):
         choix = None
         while choix not in ['RET', 'QUIT']:
             companys = self.userDAO.get_all_company_without_user()
@@ -47,21 +49,28 @@ class Controler:
                 id = choix[2:]
                 event = self.userDAO.get_event(id)
                 users = self.userDAO.get_user_by_role(4)
-                user_id = self.view.chooseUser( users)
-                self.userDAO.update_event(event.id, event.event_date_start, event.event_date_end, event.location, user_id, event.attendees, event.notes)
+                user_id = self.view.chooseUser(users)
+                self.userDAO.update_event(event.id, event.event_date_start,
+                                          event.event_date_end, event.location,
+                                          user_id, event.attendees,
+                                          event.notes)
                 return 'LIST'
             elif choix.startswith("AC"):
                 id = choix[2:]
                 company = self.userDAO.get_company(id)
                 users = self.userDAO.get_user_by_role(3)
-                user_id = self.view.chooseUser( users)
-                self.userDAO.update_company(company.id, company.company_name, company.address, user_id )
+                user_id = self.view.chooseUser(users)
+                self.userDAO.update_company(company.id, company.company_name,
+                                            company.address, user_id)
                 return 'LIST'
-            else: 
+            else:
                 return 'LIST'
 
     def boucleUser(self):
-        if self.user.authorisation('Admin') or self.user.authorisation('Gestion'):
+        if (
+            self.user.authorisation('Admin') or
+            self.user.authorisation('Gestion')
+        ):
             choix = None
             while choix not in ['RET', 'QUIT']:
                 users = self.userDAO.get_all_user_with_role_name()
@@ -75,13 +84,13 @@ class Controler:
             case 'CR':
                 self.create_user()
             case _ if choix.startswith("A"):
-                id = c[1:]
+                id = choix[1:]
                 self.handle_user_modification(id)
             case _ if choix.startswith("M"):
-                id = c[1:]
+                id = choix[1:]
                 self.handle_user_modification(id)
             case _ if choix.startswith("S"):
-                id = c[1:]
+                id = choix[1:]
                 self.userDAO.delete_user(id)
             case "QUIT":
                 return choix
@@ -100,27 +109,37 @@ class Controler:
                 case "SUPPRIMER":
                     self.userDAO.delete_user(affiche.id)
                 case _ if choix.startswith("NO "):
-                    self.userDAO.update_user(affiche.id, new_data, affiche.email, affiche.role_id)
+                    self.userDAO.update_user(affiche.id, new_data,
+                                             affiche.email, affiche.role_id)
                 case _ if choix.startswith("RE "):
                     self.userDAO.update_pasword_user(affiche.id, new_data)
                 case _ if choix.startswith("EM "):
-                    self.userDAO.update_user(affiche.id, affiche.nom, new_data, affiche.role_id)
+                    self.userDAO.update_user(affiche.id, affiche.nom,
+                                             new_data, affiche.role_id)
                 case "SE AD":
-                    self.userDAO.update_user(affiche.id, affiche.nom, affiche.email, 1)
+                    self.userDAO.update_user(affiche.id, affiche.nom,
+                                             affiche.email, 1)
                 case "SE VE":
-                    self.userDAO.update_user(affiche.id, affiche.nom, affiche.email, 3)
+                    self.userDAO.update_user(affiche.id, affiche.nom,
+                                             affiche.email, 3)
                 case "SE GE":
-                    self.userDAO.update_user(affiche.id, affiche.nom, affiche.email, 2)
+                    self.userDAO.update_user(affiche.id, affiche.nom,
+                                             affiche.email, 2)
                 case "SE SU":
-                    self.userDAO.update_user(affiche.id, affiche.nom, affiche.email, 4)
+                    self.userDAO.update_user(affiche.id, affiche.nom,
+                                             affiche.email, 4)
                 case "QUIT":
                     return choix
                 case _:
                     print("commande inconnue")
-        
-    
+
     def boucleClient(self):
-        if self.user.authorisation('Admin') or self.user.authorisation('Gestion') or self.user.authorisation('Sale') or self.user.authorisation('Support'):
+        if (
+            self.user.authorisation('Admin') or
+            self.user.authorisation('Gestion') or
+            self.user.authorisation('Sale') or
+            self.user.authorisation('Support')
+        ):
             choix = None
             while choix not in ['RET', 'QUIT']:
                 companys = self.userDAO.get_all_company()
@@ -175,13 +194,15 @@ class Controler:
 
     def create_contact(self, company):
         if self.user.authorisation('Sale') and self.user.id == company.user_id:
-            name, email, phone, signatory = self.view.createcontact(company, self.user)
+            name, email, phone, signatory = self.view.createcontact(company,
+                                                                    self.user)
             self.userDAO.add_contact(company.id, name, email, phone, signatory)
         else:
             self.view.notautorized(self.user)
 
     def recover_company(self, company):
-        self.userDAO.update_company(company.id, company.company_name, company.address, self.user.id)
+        self.userDAO.update_company(company.id, company.company_name,
+                                    company.address, self.user.id)
 
     def delete_company(self, company):
         if self.user.authorisation('Sale') and self.user.id == company.user_id:
@@ -191,13 +212,15 @@ class Controler:
 
     def update_company_name(self, company, new_data):
         if self.user.authorisation('Sale') and self.user.id == company.user_id:
-            self.userDAO.update_company(company.id, new_data, company.address, company.user_id)
+            self.userDAO.update_company(company.id, new_data, company.address,
+                                        company.user_id)
         else:
             self.view.notautorized(self.user)
 
     def update_company_address(self, company, new_data):
         if self.user.authorisation('Sale') and self.user.id == company.user_id:
-            self.userDAO.update_company(company.id, company.company_name, new_data, company.user_id)
+            self.userDAO.update_company(company.id, company.company_name,
+                                        new_data, company.user_id)
         else:
             self.view.notautorized(self.user)
 
@@ -211,32 +234,48 @@ class Controler:
     def process_contact_modification_choice(self, choix, contact, company):
         new_data = choix[3:]
         print(new_data)
-        
+
         match choix:
             case "SUPPRIMER":
                 self.userDAO.delete_contact(contact.id)
             case _ if choix.startswith("NO "):
-                self.userDAO.update_contact(contact.id, company.id, new_data, contact.email, contact.phone, contact.signatory)
+                self.userDAO.update_contact(contact.id, company.id, new_data,
+                                            contact.email, contact.phone,
+                                            contact.signatory)
             case _ if choix.startswith("EM "):
-                self.userDAO.update_contact(contact.id, company.id, contact.name, new_data, contact.phone, contact.signatory)
+                self.userDAO.update_contact(contact.id, company.id,
+                                            contact.name, new_data,
+                                            contact.phone, contact.signatory)
             case _ if choix.startswith("TE "):
-                self.userDAO.update_contact(contact.id, company.id, contact.name, contact.email, new_data, contact.signatory)
+                self.userDAO.update_contact(contact.id, company.id,
+                                            contact.name, contact.email,
+                                            new_data, contact.signatory)
             case "SI Oui":
-                self.userDAO.update_contact(contact.id, company.id, contact.name, contact.email, contact.phone, 1)
+                self.userDAO.update_contact(contact.id, company.id,
+                                            contact.name, contact.email,
+                                            contact.phone, 1)
             case "SI Non":
-                self.userDAO.update_contact(contact.id, company.id, contact.name, contact.email, contact.phone, 0)
+                self.userDAO.update_contact(contact.id, company.id,
+                                            contact.name, contact.email,
+                                            contact.phone, 0)
             case "QUIT":
                 return choix
             case _:
                 print("commande inconnue")
-                            
+
     def boucleContracts(self):
-        if self.user.authorisation('Admin') or self.user.authorisation('Gestion') or self.user.authorisation('Sale') or self.user.authorisation('Support'):
+        if (
+            self.user.authorisation('Admin') or
+            self.user.authorisation('Gestion') or
+            self.user.authorisation('Sale') or
+            self.user.authorisation('Support')
+        ):
             choix = None
             while choix not in ['RET', 'QUIT']:
                 contrats = self.userDAO.get_all_contract()
                 supports = self.userDAO.get_user_by_role(4)
-                choix = self.view.logcontracts(self.user, contrats, self.userDAO)
+                choix = self.view.logcontracts(self.user, contrats,
+                                               self.userDAO)
                 self.handle_main_choice(choix, contrats, supports)
 
     def handle_main_choice(self, choix, contrats, supports):
@@ -259,9 +298,11 @@ class Controler:
     def create_contract(self, choix):
         id = choix[2:]
         company = self.userDAO.get_company(id)
-        total_amont, current_amont, sign = self.view.createcontract(self.user, company)
+        total_amont, current_amont, sign = self.view.createcontract(self.user,
+                                                                    company)
         sign_flag = 1 if sign else 0
-        self.userDAO.add_contract(company.id, self.user.id, total_amont, current_amont, sign_flag)
+        self.userDAO.add_contract(company.id, self.user.id, total_amont,
+                                  current_amont, sign_flag)
 
     def view_contract(self, choix, contrats, supports):
         id = int(choix[1:])
@@ -272,7 +313,8 @@ class Controler:
             contrat = self.userDAO.get_contract(contratId)
             company = self.userDAO.get_company(contrat.compagny_id)
             events = self.userDAO.get_event_for_contract(contrat.id)
-            choix = self.view.contractview(self.user, company, contrat, events, self.userDAO)
+            choix = self.view.contractview(self.user, company, contrat, events,
+                                           self.userDAO)
             self.contract_choice(choix, contrat, company, events, supports)
 
     def contract_choice(self, choix, contrat, company, events, supports):
@@ -318,20 +360,40 @@ class Controler:
             case "RET" | "QUIT":
                 return choix
             case _ if choix.startswith("MS"):
-                self.userDAO.update_event(event.id, datetime.strptime(new_data, "%d/%m/%Y %H:%M"), event.event_date_end, event.location, event.id_user, event.attendees, event.notes)
+                self.userDAO.update_event(
+                    event.id, datetime.strptime(new_data,
+                                                "%d/%m/%Y %H:%M"),
+                    event.event_date_end, event.location,
+                    event.id_user, event.attendees, event.notes)
             case _ if choix.startswith("ME"):
-                self.userDAO.update_event(event.id, event.event_date_start, datetime.strptime(new_data, "%d/%m/%Y %H:%M"), event.location, event.id_user, event.attendees, event.notes)
+                self.userDAO.update_event(
+                    event.id, event.event_date_start,
+                    datetime.strptime(new_data, "%d/%m/%Y %H:%M"),
+                    event.location, event.id_user, event.attendees,
+                    event.notes)
             case _ if choix.startswith("ML"):
-                self.userDAO.update_event(event.id, event.event_date_start, event.event_date_end, new_data, event.id_user, event.attendees, event.notes)
+                self.userDAO.update_event(event.id, event.event_date_start,
+                                          event.event_date_end, new_data,
+                                          event.id_user, event.attendees,
+                                          event.notes)
             case _ if choix.startswith("MA"):
-                self.userDAO.update_event(event.id, event.event_date_start, event.event_date_end, event.location, event.id_user, new_data, event.notes)
+                self.userDAO.update_event(event.id, event.event_date_start,
+                                          event.event_date_end, event.location,
+                                          event.id_user, new_data, event.notes)
             case _ if choix.startswith("MN"):
-                self.userDAO.update_event(event.id, event.event_date_start, event.event_date_end, event.location, event.id_user, event.attendees, new_data)
+                self.userDAO.update_event(event.id, event.event_date_start,
+                                          event.event_date_end, event.location,
+                                          event.id_user, event.attendees,
+                                          new_data)
 
     def create_event(self, company, contrat, supports):
         if self.user.authorisation('Sale') and self.user.id == company.user_id:
-            event_date_start, event_date_end, location, support_id, attendees, notes = self.view.createevent(company, self.user, supports)
-            eventid = self.userDAO.add_event(event_date_start, event_date_end, location, support_id, attendees, notes)
+            event_date_start, event_date_end, location, support_id, attendees, notes = (
+                    self.view.createevent(company, self.user, supports)
+                )
+            eventid = self.userDAO.add_event(event_date_start, event_date_end,
+                                             location, support_id, attendees,
+                                             notes)
             self.userDAO.add_event_contract(eventid, contrat.id)
         else:
             self.view.notautorized(self.user)
@@ -345,20 +407,26 @@ class Controler:
     def update_contract_total(self, choix, contrat, company):
         if self.user.authorisation('Sale') and self.user.id == company.user_id:
             new_total = float(choix[3:])
-            self.userDAO.update_contract(contrat.id, company.id, self.user.id, new_total, contrat.current_amont, contrat.sign)
+            self.userDAO.update_contract(contrat.id, company.id, self.user.id,
+                                         new_total, contrat.current_amont,
+                                         contrat.sign)
         else:
             self.view.notautorized(self.user)
 
     def update_contract_current(self, choix, contrat, company):
         if self.user.authorisation('Sale') and self.user.id == company.user_id:
             new_current = float(choix[3:])
-            self.userDAO.update_contract(contrat.id, company.id, self.user.id, contrat.total_amont, new_current, contrat.sign)
+            self.userDAO.update_contract(contrat.id, company.id, self.user.id,
+                                         contrat.total_amont, new_current,
+                                         contrat.sign)
         else:
             self.view.notautorized(self.user)
 
     def update_contract_sign(self, contrat, company, sign):
         if self.user.authorisation('Sale') and self.user.id == company.user_id:
-            self.userDAO.update_contract(contrat.id, company.id, self.user.id, contrat.total_amont, contrat.current_amont, sign)
+            self.userDAO.update_contract(contrat.id, company.id, self.user.id,
+                                         contrat.total_amont,
+                                         contrat.current_amont, sign)
         else:
             self.view.notautorized(self.user)
 
@@ -374,9 +442,14 @@ class Controler:
         id = int(choix[1:])
         contrat = contrats[id]
         self.userDAO.delete_contract(contrat.id)
-                
+
     def boucleEvents(self):
-        if self.user.authorisation('Admin') or self.user.authorisation('Gestion') or self.user.authorisation('Sale') or self.user.authorisation('Support'):
+        if (
+            self.user.authorisation('Admin') or
+            self.user.authorisation('Gestion') or
+            self.user.authorisation('Sale') or
+            self.user.authorisation('Support')
+        ):
             choix = None
             while choix not in ['RET', 'QUIT']:
                 events = self.userDAO.get_all_event_details_with_company()
@@ -435,14 +508,30 @@ class Controler:
                 case "RET" | "QUIT":
                     return choix
                 case _ if choix.startswith("MS"):
-                    self.userDAO.update_event(event.id, datetime.strptime(new_data, "%d/%m/%Y %H:%M"), event.event_date_end, event.location, event.id_user, event.attendees, event.notes)
+                    self.userDAO.update_event(event.id, datetime.strptime(
+                        new_data, "%d/%m/%Y %H:%M"), event.event_date_end,
+                        event.location, event.id_user, event.attendees,
+                        event.notes)
                 case _ if choix.startswith("ME"):
-                    self.userDAO.update_event(event.id, event.event_date_start, datetime.strptime(new_data, "%d/%m/%Y %H:%M"), event.location, event.id_user, event.attendees, event.notes)
+                    self.userDAO.update_event(
+                        event.id, event.event_date_start,
+                        datetime.strptime(new_data, "%d/%m/%Y %H:%M"),
+                        event.location, event.id_user, event.attendees,
+                        event.notes)
                 case _ if choix.startswith("ML"):
-                    self.userDAO.update_event(event.id, event.event_date_start, event.event_date_end, new_data, event.id_user, event.attendees, event.notes)
+                    self.userDAO.update_event(event.id, event.event_date_start,
+                                              event.event_date_end, new_data,
+                                              event.id_user, event.attendees,
+                                              event.notes)
                 case _ if choix.startswith("MA"):
-                    self.userDAO.update_event(event.id, event.event_date_start, event.event_date_end, event.location, event.id_user, new_data, event.notes)
+                    self.userDAO.update_event(event.id, event.event_date_start,
+                                              event.event_date_end,
+                                              event.location, event.id_user,
+                                              new_data, event.notes)
                 case _ if choix.startswith("MN"):
-                    self.userDAO.update_event(event.id, event.event_date_start, event.event_date_end, event.location, event.id_user, event.attendees, new_data)
+                    self.userDAO.update_event(event.id, event.event_date_start,
+                                              event.event_date_end,
+                                              event.location, event.id_user,
+                                              event.attendees, new_data)
                 case _:
                     return choix

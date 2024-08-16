@@ -2,7 +2,6 @@ from rich import print as rprint
 from rich.console import Console
 from rich.panel import Panel
 from rich.align import Align
-from rich.layout import Layout
 from rich.text import Text
 from rich.table import Table
 from datetime import datetime
@@ -12,10 +11,11 @@ from rich.columns import Columns
 import calendar
 import locale
 
+
 class View :
     def __init__(self):
         pass
-    
+
     def ascii(self):
         rprint("[bold green]      ___           ___                     ___           ___                        ___           ___                 [/bold green]")
         rprint("[bold green]     /  /\         /  /\      ___          /  /\         /  /\          ___         /  /\         /__/\          ___   [/bold green]")
@@ -31,10 +31,7 @@ class View :
         print("")
         print("")
         print("")
-        
-    def login(self):
-       pass
-   
+
     def title(self, user):
         console = Console()
         title_text = Text("EpicEvent", style="bold white on green", justify="center")
@@ -47,7 +44,6 @@ class View :
         second_line = f"[bold green]{user.email}[/bold green]{' ' * (console.width - len(user.email) - len(current_time))}{current_time}"
         console.print(second_line)
 
-    
     def logtrue(self, user, text):
         self.title(user)
         console = Console()

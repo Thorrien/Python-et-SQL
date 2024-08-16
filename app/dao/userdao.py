@@ -8,7 +8,8 @@ from app.utils import config
 class UserDAO:
     def __init__(self):
         self.engine = create_engine(
-            f'mysql+pymysql://{config.DB_USER}:{config.DB_PASSWORD}@{config.DB_HOST}/{config.DB_NAME}',
+            f'mysql+pymysql://{config.DB_USER}:{config.DB_PASSWORD}@'
+            f'{config.DB_HOST}/{config.DB_NAME}',
             echo=False
         )
         self.base = Base
