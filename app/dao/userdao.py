@@ -1,6 +1,7 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine, MetaData, inspect
-from app.models.models import User, event_contract, Base, Role, Company, Event, Contact, Contract, Text
+from app.models.models import User, event_contract, Base, Role
+from app.models.models import Company, Event, Contact, Contract, Text
 from app.utils import config
 
 
@@ -29,7 +30,7 @@ class UserDAO:
                 print(f"  - Column: {column.name}, Type: {column.type}")
             print(" ")
             print(" ")
-            
+
     def get_all_users(self):
         session = self.Session()
         try:
@@ -39,7 +40,7 @@ class UserDAO:
             print(f"Error: {e}")
         finally:
             session.close()
-    
+
     def get_all_user_with_role_name(self):
         session = self.Session()
         try:
@@ -75,13 +76,15 @@ class UserDAO:
     def get_user_by_email(self, email: str):
         session = self.Session()
         try:
-            user = session.query(User).filter(User.email == email).one_or_none()
+            user = session.query(User).filter(
+                User.email == email
+                ).one_or_none()
             return user
         except Exception as e:
             print(f"Error: {e}")
         finally:
             session.close()
-                
+
     def get_user_by_role(self, role_id: int):
         session = self.Session()
         try:
@@ -91,13 +94,13 @@ class UserDAO:
             print(f"Error: {e}")
         finally:
             session.close()
-            
+
     def add_user(self, name: str, email: str, password: str, role_id: int):
         session = self.Session()
         try:
             new_user = User(
-                nom=name, 
-                email=email, 
+                nom=name,
+                email=email,
                 role_id=role_id
                 )
             new_user.set_password(password)
@@ -109,7 +112,7 @@ class UserDAO:
         finally:
             session.close()
 
-    def update_pasword_user(self, user_id: int, password: str ):
+    def update_pasword_user(self, user_id: int, password: str):
         session = self.Session()
         try:
             user = session.query(User).filter(User.id == user_id).one_or_none()
@@ -136,7 +139,7 @@ class UserDAO:
             print(f"Error: {e}")
         finally:
             session.close()
-            
+
     def delete_user(self, user_id: int):
         session = self.Session()
         try:
@@ -149,7 +152,7 @@ class UserDAO:
             print(f"Error: {e}")
         finally:
             session.close()
-            
+
     def add_role(self, role: str):
         session = self.Session()
         try:
@@ -185,7 +188,9 @@ class UserDAO:
     def update_role(self, role_id: int, role: str):
         session = self.Session()
         try:
-            role_obj = session.query(Role).filter(Role.id == role_id).one_or_none()
+            role_obj = session.query(Role).filter(
+                Role.id == role_id
+                ).one_or_none()
             if role_obj:
                 role_obj.role = role
                 session.commit()
@@ -208,13 +213,12 @@ class UserDAO:
         finally:
             session.close()
 
-
-    def add_company(self, name: str, user_id: int, adress: str ):
+    def add_company(self, name: str, user_id: int, adress: str):
         session = self.Session()
         try:
             new_company = Company(
                 company_name=name,
-                adress = adress, 
+                adress=adress,
                 user_id=user_id
                 )
             session.add(new_company)
@@ -225,10 +229,12 @@ class UserDAO:
         finally:
             session.close()
 
-    def update_company(self, id: int, name: str, address: str, user_id: int ):
+    def update_company(self, id: int, name: str, address: str, user_id: int):
         session = self.Session()
         try:
-            company = session.query(Company).filter(Company.id == id).one_or_none()
+            company = session.query(Company).filter(
+                Company.id == id
+                ).one_or_none()
             if company:
                 company.company_name = name
                 company.address = address
@@ -243,7 +249,9 @@ class UserDAO:
     def delete_company(self, company_id: int):
         session = self.Session()
         try:
-            company = session.query(Company).filter(Company.id == company_id).one_or_none()
+            company = session.query(Company).filter(
+                Company.id == company_id
+                ).one_or_none()
             if company:
                 session.delete(company)
                 session.commit()
@@ -262,11 +270,13 @@ class UserDAO:
             print(f"Error: {e}")
         finally:
             session.close()
-    
+
     def get_all_company_without_user(self):
         session = self.Session()
         try:
-            companys = session.query(Company).filter(Company.user_id == None).all()
+            companys = session.query(Company).filter(
+                Company.user_id is None
+                ).all()
             return companys
         except Exception as e:
             print(f"Error: {e}")
@@ -276,24 +286,29 @@ class UserDAO:
     def get_company(self, id: int):
         session = self.Session()
         try:
-            company = session.query(Company).filter(Company.id == id).one_or_none()
+            company = session.query(Company).filter(
+                Company.id == id
+                ).one_or_none()
             return company
         except Exception as e:
             print(f"Error: {e}")
         finally:
             session.close()
-                
+
     def get_user_by_user_id(self, user_id: int):
         session = self.Session()
         try:
-            companys = session.query(Company).filter(Company.user_id == user_id).all()
+            companys = session.query(Company).filter(
+                Company.user_id == user_id
+                ).all()
             return companys
         except Exception as e:
             print(f"Error: {e}")
         finally:
             session.close()
-            
-    def add_event(self, event_date_start, event_date_end, location: str, id_user: int, attendees: int, notes=None):
+
+    def add_event(self, event_date_start, event_date_end, location: str,
+                  id_user: int, attendees: int, notes=None):
         session = self.Session()
         try:
             new_event = Event(
@@ -313,7 +328,7 @@ class UserDAO:
             print(f"Error: {e}")
         finally:
             session.close()
-            
+
     def get_event(self, id: int):
         session = self.Session()
         try:
@@ -327,24 +342,25 @@ class UserDAO:
     def get_all_events_by_user_id(self, user_id):
         session = self.Session()
         try:
-            events = session.query(Event).filter(Event.id_user == user_id).all()
+            events = session.query(Event).filter(
+                Event.id_user == user_id
+                ).all()
             return events
         except Exception as e:
             print(f"Error: {e}")
         finally:
             session.close()
-            
+
     def get_all_events_without_user(self):
         session = self.Session()
         try:
-            events = session.query(Event).filter(Event.id_user == None).all()
+            events = session.query(Event).filter(Event.id_user is None).all()
             return events
         except Exception as e:
             print(f"Error: {e}")
         finally:
             session.close()
-            
-            
+
     def get_all_events(self):
         session = self.Session()
         try:
@@ -355,7 +371,8 @@ class UserDAO:
         finally:
             session.close()
 
-    def update_event(self, id: int, event_date_start, event_date_end, location: str, id_user: int, attendees: int, notes):
+    def update_event(self, id: int, event_date_start, event_date_end,
+                     location: str, id_user: int, attendees: int, notes):
         session = self.Session()
         try:
             event = session.query(Event).filter(Event.id == id).one_or_none()
@@ -376,7 +393,9 @@ class UserDAO:
     def delete_event(self, event_id: int):
         session = self.Session()
         try:
-            event = session.query(Event).filter(Event.id == event_id).one_or_none()
+            event = session.query(Event).filter(
+                Event.id == event_id
+                ).one_or_none()
             if event:
                 session.delete(event)
                 session.commit()
@@ -386,7 +405,8 @@ class UserDAO:
         finally:
             session.close()
 
-    def add_contact(self, compagny_id: int, name: str, email: str, phone: str, signatory=False):
+    def add_contact(self, compagny_id: int, name: str,
+                    email: str, phone: str, signatory=False):
         session = self.Session()
         try:
             new_contact = Contact(
@@ -405,10 +425,13 @@ class UserDAO:
         finally:
             session.close()
 
-    def update_contact(self, id: int, compagny_id: int, name: str, email: str, phone: str, signatory):
+    def update_contact(self, id: int, compagny_id: int,
+                       name: str, email: str, phone: str, signatory):
         session = self.Session()
         try:
-            contact = session.query(Contact).filter(Contact.id == id).one_or_none()
+            contact = session.query(Contact).filter(
+                Contact.id == id
+                ).one_or_none()
             if contact:
                 contact.compagny_id = compagny_id
                 contact.name = name
@@ -425,7 +448,9 @@ class UserDAO:
     def delete_contact(self, contact_id: int):
         session = self.Session()
         try:
-            contact = session.query(Contact).filter(Contact.id == contact_id).one_or_none()
+            contact = session.query(Contact).filter(
+                Contact.id == contact_id
+                ).one_or_none()
             if contact:
                 session.delete(contact)
                 session.commit()
@@ -434,11 +459,13 @@ class UserDAO:
             print(f"Error: {e}")
         finally:
             session.close()
-            
+
     def get_contact(self, id: int):
         session = self.Session()
         try:
-            contact = session.query(Contact).filter(Contact.id == id).one_or_none()
+            contact = session.query(Contact).filter(
+                Contact.id == id
+                ).one_or_none()
             return contact
         except Exception as e:
             print(f"Error: {e}")
@@ -448,7 +475,9 @@ class UserDAO:
     def get_all_contact_by_company_id(self, id):
         session = self.Session()
         try:
-            contacts = session.query(Contact).filter(Contact.compagny_id == id).all()
+            contacts = session.query(Contact).filter(
+                Contact.compagny_id == id
+                ).all()
             return contacts
         except Exception as e:
             print(f"Error: {e}")
@@ -481,11 +510,13 @@ class UserDAO:
             return []
         finally:
             session.close()
-            
+
     def delete_contract(self, contract_id: int):
         session = self.Session()
         try:
-            contract = session.query(Contract).filter(Contract.id == contract_id).one_or_none()
+            contract = session.query(Contract).filter(
+                Contract.id == contract_id
+                ).one_or_none()
             if contract:
                 session.delete(contract)
                 session.commit()
@@ -494,17 +525,18 @@ class UserDAO:
             print(f"Error: {e}")
         finally:
             session.close()
-            
+
     def get_contract(self, contract_id: int):
         session = self.Session()
         try:
-            contact = session.query(Contract).filter(Contract.id == contract_id).one_or_none()
+            contact = session.query(Contract).filter(
+                Contract.id == contract_id
+                ).one_or_none()
             return contact
         except Exception as e:
             print(f"Error: {e}")
         finally:
             session.close()
-            
 
     def get_all_contract(self):
         session = self.Session()
@@ -519,54 +551,64 @@ class UserDAO:
     def get_all_contracts_by_user_id(self, user_id: int):
         session = self.Session()
         try:
-            contracts = session.query(Contract).filter(Contract.user_id == user_id).all()
-            return contracts
-        except Exception as e:
-            print(f"Error: {e}")
-        finally:
-            session.close()
-            
-    def get_all_contracts_by_company_id(self, compagny_id : int):
-        session = self.Session()
-        try:
-            contracts = session.query(Contract).filter(Contract.compagny_id == compagny_id).all()
-            return contracts
-        except Exception as e:
-            print(f"Error: {e}")
-        finally:
-            session.close()
-            
-    def get_all_my_contracts_sign(self, user_id : int):
-        session = self.Session()
-        try:
-            contracts = session.query(Contract).filter(Contract.user_id == user_id, Contract.sign == True).all()
-            return contracts
-        except Exception as e:
-            print(f"Error: {e}")
-        finally:
-            session.close()
-            
-    def get_all_contracts_without_user(self):
-        session = self.Session()
-        try:
-            contracts = session.query(Contract).filter(Contract.user_id == None).all()
-            return contracts
-        except Exception as e:
-            print(f"Error: {e}")
-        finally:
-            session.close()
-    
-    def get_all_contracts_without_full_paiement(self, user_id : int):
-        session = self.Session()
-        try:
-            contracts = session.query(Contract).filter(Contract.user_id == user_id, Contract.current_amont < Contract.total_amont).all()
+            contracts = session.query(Contract).filter(
+                Contract.user_id == user_id
+                ).all()
             return contracts
         except Exception as e:
             print(f"Error: {e}")
         finally:
             session.close()
 
-    def add_contract(self, compagny_id: int, user_id: int, total_amont: float, current_amont: float, sign=False):
+    def get_all_contracts_by_company_id(self, compagny_id: int):
+        session = self.Session()
+        try:
+            contracts = session.query(Contract).filter(
+                Contract.compagny_id == compagny_id
+                ).all()
+            return contracts
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            session.close()
+
+    def get_all_my_contracts_sign(self, user_id: int):
+        session = self.Session()
+        try:
+            contracts = session.query(Contract).filter(
+                Contract.user_id == user_id, Contract.sign is True).all()
+            return contracts
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            session.close()
+
+    def get_all_contracts_without_user(self):
+        session = self.Session()
+        try:
+            contracts = session.query(Contract).filter(
+                Contract.user_id is None
+                ).all()
+            return contracts
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            session.close()
+
+    def get_all_contracts_without_full_paiement(self, user_id: int):
+        session = self.Session()
+        try:
+            contracts = session.query(Contract).filter(
+                Contract.user_id == user_id,
+                Contract.current_amont < Contract.total_amont).all()
+            return contracts
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            session.close()
+
+    def add_contract(self, compagny_id: int, user_id: int, total_amont: float,
+                     current_amont: float, sign=False):
         session = self.Session()
         try:
             contract = Contract(
@@ -585,10 +627,13 @@ class UserDAO:
         finally:
             session.close()
 
-    def update_contract(self, id: int, compagny_id: int, user_id: int, total_amont: float, current_amont: float, sign=False):
+    def update_contract(self, id: int, compagny_id: int, user_id: int,
+                        total_amont: float, current_amont: float, sign=False):
         session = self.Session()
         try:
-            contract = session.query(Contract).filter(Contract.id == id).one_or_none()
+            contract = session.query(Contract).filter(
+                Contract.id == id
+                ).one_or_none()
             if contract:
                 contract.compagny_id = compagny_id
                 contract.user_id = user_id
@@ -605,13 +650,16 @@ class UserDAO:
     def add_event_contract(self, event_id: int, contract_id: str):
         session = self.Session()
         try:
-            event = session.query(Event).filter(Event.id == event_id).one_or_none()
-            contract = session.query(Contract).filter(Contract.id == contract_id).one_or_none()
-            
+            event = session.query(Event).filter(
+                Event.id == event_id
+                ).one_or_none()
+            contract = session.query(Contract).filter(
+                Contract.id == contract_id
+                ).one_or_none()
+
             if event and contract:
                 event.contracts.append(contract)
                 session.commit()
-                print(f"Event {event_id} successfully linked with contract {contract_id}")
             else:
                 if not event:
                     print(f"Event with ID {event_id} not found.")
@@ -622,24 +670,31 @@ class UserDAO:
             print(f"Error: {e}")
         finally:
             session.close()
-    
-    def modify_event_contract(self, event_id: int, old_contract_id: str, new_contract_id: str):
+
+    def modify_event_contract(self, event_id: int,
+                              old_contract_id: str,
+                              new_contract_id: str):
         session = self.Session()
         try:
             # Rechercher l'événement et les contrats
-            event = session.query(Event).filter(Event.id == event_id).one_or_none()
-            old_contract = session.query(Contract).filter(Contract.id == old_contract_id).one_or_none()
-            new_contract = session.query(Contract).filter(Contract.id == new_contract_id).one_or_none()
-            
+            event = session.query(Event).filter(
+                Event.id == event_id
+                ).one_or_none()
+            old_contract = session.query(Contract).filter(
+                Contract.id == old_contract_id
+                ).one_or_none()
+            new_contract = session.query(Contract).filter(
+                Contract.id == new_contract_id
+                ).one_or_none()
+
             if event and old_contract and new_contract:
                 # Remplacer l'ancien contrat par le nouveau
                 if old_contract in event.contracts:
                     event.contracts.remove(old_contract)
                     event.contracts.append(new_contract)
                     session.commit()
-                    print(f"Contract {old_contract_id} replaced with {new_contract_id} for event {event_id}")
                 else:
-                    print(f"Contract {old_contract_id} is not associated with event {event_id}")
+                    print(f"Contract {old_contract_id} / {event_id}")
             else:
                 if not event:
                     print(f"Event with ID {event_id} not found.")
@@ -652,22 +707,25 @@ class UserDAO:
             print(f"Error: {e}")
         finally:
             session.close()
-    
+
     def delete_event_contract(self, event_id: int, contract_id: str):
         session = self.Session()
         try:
             # Rechercher l'événement et le contrat
-            event = session.query(Event).filter(Event.id == event_id).one_or_none()
-            contract = session.query(Contract).filter(Contract.id == contract_id).one_or_none()
-            
+            event = session.query(Event).filter(
+                Event.id == event_id
+                ).one_or_none()
+            contract = session.query(Contract).filter(
+                Contract.id == contract_id
+                ).one_or_none()
+
             if event and contract:
                 # Supprimer l'association
                 if contract in event.contracts:
                     event.contracts.remove(contract)
                     session.commit()
-                    print(f"Contract {contract_id} removed from event {event_id}")
                 else:
-                    print(f"Contract {contract_id} is not associated with event {event_id}")
+                    print(f"Contract {contract_id} / {event_id}")
             else:
                 if not event:
                     print(f"Event with ID {event_id} not found.")
@@ -682,8 +740,10 @@ class UserDAO:
     def get_contract_for_event(self, event_id: int):
         session = self.Session()
         try:
-            event = session.query(Event).filter(Event.id == event_id).one_or_none()
-            
+            event = session.query(Event).filter(
+                Event.id == event_id
+                ).one_or_none()
+
             if event:
                 return event.contracts
             else:
@@ -694,12 +754,14 @@ class UserDAO:
             return None
         finally:
             session.close()
-            
+
     def get_event_for_contract(self, contract_id: str):
         session = self.Session()
         try:
-            contract = session.query(Contract).filter(Contract.id == contract_id).one_or_none()
-            
+            contract = session.query(Contract).filter(
+                Contract.id == contract_id
+                ).one_or_none()
+
             if contract:
                 return contract.events
             else:
@@ -710,12 +772,14 @@ class UserDAO:
             return None
         finally:
             session.close()
-            
+
     def get_company_events(self, company_id: int):
         session = self.Session()
         try:
-            company = session.query(Company).filter(Company.id == company_id).one_or_none()
-            
+            company = session.query(Company).filter(
+                Company.id == company_id
+                ).one_or_none()
+
             if company:
                 events = []
                 for contract in company.contracts:
@@ -729,7 +793,7 @@ class UserDAO:
             return None
         finally:
             session.close()
-    
+
     def get_all_event_details_with_company(self):
         session = self.Session()
         try:
@@ -776,7 +840,7 @@ class UserDAO:
             return None
         finally:
             session.close()
-            
+
     def get_text(self, id: int):
         session = self.Session()
         try:
@@ -786,7 +850,7 @@ class UserDAO:
             print(f"Error: {e}")
         finally:
             session.close()
-            
+
     def update_text(self, id: int, text: str):
         session = self.Session()
         try:
