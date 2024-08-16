@@ -132,7 +132,12 @@ class Contact(Base):
                 f"email={self.email}, phone={self.phone}, creation_date={self.creation_date}, "
                 f"update_date={self.update_date}, signatory={self.signatory})>")
 
-
+class Text(Base):
+    __tablename__ = 'texts'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    data = Column(String(3000), nullable=False)   
+    
+    
 class Contract(Base):
     __tablename__ = 'contract'
 

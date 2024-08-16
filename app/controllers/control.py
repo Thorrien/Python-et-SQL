@@ -8,171 +8,227 @@ class Controler:
         self.user = user
         
     def run(self):
-        self.view.logtrue(self.user)
+        text = self.userDAO.get_text(1)
+        self.view.logtrue(self.user, text.data)
         self.gestboucle()
         
     def gestboucle(self):
         choix = None
-        while choix != "QUIT" : 
+        while choix != "QUIT":
             choix = self.view.menuprincipalgestion(self.user)
-            if choix == "US" : 
-                choix = self.boucleUser()
-            elif choix == "CL" :
-                self.boucleClient()
-            elif choix == "CO" :
-                self.boucleContracts()
-            elif choix == "EV":
-                self.boucleEvents()
-            elif choix == "MO":
-                pass
-            elif choix == "SU":
-                pass
-                
+            match choix:
+                case "US":
+                    choix = self.boucleUser()
+                case "CL":
+                    self.boucleClient()
+                case "CO":
+                    self.boucleContracts()
+                case "EV":
+                    self.boucleEvents()
+                case "MO":
+                    if self.user.authorisation("Gestion"):
+                        data = self.view.getText(self.user)
+                        self.userDAO.update_text(1, data)
+                    else:
+                        self.view.notautorized(self.user)
+                case "SU":
+                    if self.user.authorisation("Gestion"):
+                        self.boucleAttributions()
+                    else:
+                        self.view.notautorized(self.user)
+    
+    def boucleAttributions(self):   
+        choix = None
+        while choix not in ['RET', 'QUIT']:
+            companys = self.userDAO.get_all_company_without_user()
+            events = self.userDAO.get_all_events_without_user()
+            choix = self.view.logWithoutUser(self.user, events, companys)
+            if choix.startswith("AE"):
+                id = choix[2:]
+                event = self.userDAO.get_event(id)
+                users = self.userDAO.get_user_by_role(4)
+                user_id = self.view.chooseUser( users)
+                self.userDAO.update_event(event.id, event.event_date_start, event.event_date_end, event.location, user_id, event.attendees, event.notes)
+                return 'LIST'
+            elif choix.startswith("AC"):
+                id = choix[2:]
+                company = self.userDAO.get_company(id)
+                users = self.userDAO.get_user_by_role(3)
+                user_id = self.view.chooseUser( users)
+                self.userDAO.update_company(company.id, company.company_name, company.address, user_id )
+                return 'LIST'
+            else: 
+                return 'LIST'
+
     def boucleUser(self):
         if self.user.authorisation('Admin') or self.user.authorisation('Gestion'):
             choix = None
             while choix not in ['RET', 'QUIT']:
                 users = self.userDAO.get_all_user_with_role_name()
                 choix = self.view.logutilisateurs(self.user, users)
-                if choix == 'CR':
-                    nom, email, mot_de_passe, role = self.view.createuserview()
-                    self.userDAO.add_user(nom, email, mot_de_passe, int(role))
-                elif choix.startswith("A"):
-                    id = choix[1:]
-                    choix = None
-                    while choix not in ['LIST', 'RET', 'QUIT', 'SUPPRIMER']:
-                        affiche = self.userDAO.get_user(id)
-                        choix = self.view.soloUserView(self.user, affiche)
-                        new_data = choix[3:]
-                        print(new_data)
-                        if choix == "SUPPRIMER":
-                            self.userDAO.delete_user(id)
-                        elif choix.startswith("NO "):
-                            self.userDAO.update_user(affiche.id, new_data, affiche.email, affiche.role_id)
-                        elif choix.startswith("RE "):
-                            self.userDAO.update_pasword_user(affiche.id, new_data)
-                        elif choix.startswith("EM "):
-                            self.userDAO.update_user(affiche.id, affiche.nom, new_data, affiche.role_id)
-                        elif choix == "SE AD":
-                            self.userDAO.update_user(affiche.id, affiche.nom, affiche.email, 1)
-                        elif choix == "SE VE":
-                            self.userDAO.update_user(affiche.id, affiche.nom, affiche.email, 3)
-                        elif choix == "SE GE":
-                            self.userDAO.update_user(affiche.id, affiche.nom, affiche.email, 2)
-                        elif choix == "SE SU":
-                            self.userDAO.update_user(affiche.id, affiche.nom, affiche.email, 4)
-                        elif choix == "QUIT":
-                            return choix
-                        else: 
-                            print("commande inconnue")    
-                elif choix.startswith("M"):
-                    id = choix[1:]
-                    choix = None
-                    while choix not in ['LIST', 'RET', 'QUIT', 'SUPPRIMER']:
-                        affiche = self.userDAO.get_user(id)
-                        choix = self.view.soloUserView(self.user, affiche)
-                        new_data = choix[3:]
-                        print(new_data)
-                        if choix == "SUPPRIMER":
-                            self.userDAO.delete_user(id)
-                        elif choix.startswith("NO "):
-                            self.userDAO.update_user(affiche.id, new_data, affiche.email, affiche.role_id)
-                        elif choix.startswith("RE "):
-                            self.userDAO.update_pasword_user(affiche.id, new_data)
-                        elif choix.startswith("EM "):
-                            self.userDAO.update_user(affiche.id, affiche.nom, new_data, affiche.role_id)
-                        elif choix == "SE AD":
-                            self.userDAO.update_user(affiche.id, affiche.nom, affiche.email, 1)
-                        elif choix == "SE VE":
-                            self.userDAO.update_user(affiche.id, affiche.nom, affiche.email, 3)
-                        elif choix == "SE GE":
-                            self.userDAO.update_user(affiche.id, affiche.nom, affiche.email, 2)
-                        elif choix == "SE SU":
-                            self.userDAO.update_user(affiche.id, affiche.nom, affiche.email, 4)
-                        elif choix == "QUIT":
-                            return choix
-                        else: 
-                            print("commande inconnue")
-                elif choix.startswith("S"):
-                    id = choix[1:]
-                    self.userDAO.delete_user(id)
-                elif choix == "QUIT":
-                    return choix
-        else : 
+                self.main_choice(choix)
+        else:
             self.view.notautorized(self.user)
 
+    def main_choice(self, choix):
+        match choix:
+            case 'CR':
+                self.create_user()
+            case str(c) if c.startswith("A"):
+                id = c[1:]
+                self.handle_user_modification(id)
+            case str(c) if c.startswith("M"):
+                id = c[1:]
+                self.handle_user_modification(id)
+            case str(c) if c.startswith("S"):
+                id = c[1:]
+                self.userDAO.delete_user(id)
+            case "QUIT":
+                return choix
+
+    def create_user(self):
+        nom, email, mot_de_passe, role = self.view.createuserview()
+        self.userDAO.add_user(nom, email, mot_de_passe, int(role))
+
+    def handle_user_modification(self, id):
+        choix = None
+        while choix not in ['LIST', 'RET', 'QUIT', 'SUPPRIMER']:
+            affiche = self.userDAO.get_user(id)
+            choix = self.view.soloUserView(self.user, affiche)
+            new_data = choix[3:]
+            match choix:
+                case "SUPPRIMER":
+                    self.userDAO.delete_user(affiche.id)
+                case str(ch) if ch.startswith("NO "):
+                    self.userDAO.update_user(affiche.id, new_data, affiche.email, affiche.role_id)
+                case str(ch) if ch.startswith("RE "):
+                    self.userDAO.update_pasword_user(affiche.id, new_data)
+                case str(ch) if ch.startswith("EM "):
+                    self.userDAO.update_user(affiche.id, affiche.nom, new_data, affiche.role_id)
+                case "SE AD":
+                    self.userDAO.update_user(affiche.id, affiche.nom, affiche.email, 1)
+                case "SE VE":
+                    self.userDAO.update_user(affiche.id, affiche.nom, affiche.email, 3)
+                case "SE GE":
+                    self.userDAO.update_user(affiche.id, affiche.nom, affiche.email, 2)
+                case "SE SU":
+                    self.userDAO.update_user(affiche.id, affiche.nom, affiche.email, 4)
+                case "QUIT":
+                    return choix
+                case _:
+                    print("commande inconnue")
+        
+    
     def boucleClient(self):
         if self.user.authorisation('Admin') or self.user.authorisation('Gestion') or self.user.authorisation('Sale') or self.user.authorisation('Support'):
             choix = None
             while choix not in ['RET', 'QUIT']:
                 companys = self.userDAO.get_all_company()
                 choix = self.view.logclients(self.user, companys)
-                if choix == 'CR':
-                    compagny_name = self.view.createcompany(self.user)
-                    self.userDAO.add_company(compagny_name, self.user.id)
-                elif choix.startswith("A") :
-                    id = choix[1:]
-                    choix = None
-                    while choix not in ['LIST', 'RET', 'QUIT', 'SUPPRIMER']:
-                        company = self.userDAO.get_company(id)
-                        contacts = self.userDAO.get_all_contact_by_company_id(id)
-                        choix = None
-                        choix = self.view.totalViewCompagny(self.user, company, contacts)
-                        if choix.startswith("A"):
-                            id_contact = choix[1:]
-                        else: 
-                            new_data = choix[3:]
+                self.client_main_choice(choix)
+        else:
+            self.view.notautorized(self.user)
 
-                        if choix == "CR":
-                            if self.user.authorisation('Sale') and self.user.id == company.user_id :
-                                name, email, phone, signatory = self.view.createcontact(company, self.user)
-                                self.userDAO.add_contact(company.id, name, email, phone, signatory)
-                            else: 
-                                self.view.notautorized(self.user)
-                        elif choix == 'RECUPERER':
-                                self.userDAO.update_company(company.id, company.company_name, company.address,self.user.id)
-                        elif choix == "SUPPRIMER":
-                            if self.user.authorisation('Sale') and self.user.id == company.user_id :
-                                self.userDAO.delete_company(company.id)
-                            else: 
-                                self.view.notautorized(self.user)
-                        elif choix.startswith("MN "):
-                            if self.user.authorisation('Sale') and self.user.id == company.user_id :
-                                self.userDAO.update_company(company.id, new_data, company.address, company.user_id)
-                            else: 
-                                self.view.notautorized(self.user)
-                        elif choix.startswith("MA "):
-                            if self.user.authorisation('Sale') and self.user.id == company.user_id :
-                                self.userDAO.update_company(company.id, company.company_name, new_data, company.user_id)
-                            else: 
-                                self.view.notautorized(self.user)
-                        elif choix.startswith("A"):
-                            choix = None
-                            while choix not in ['ENTR', 'RET', 'QUIT', 'SUPPRIMER']:
-                                contact = self.userDAO.get_contact(id_contact)
-                                choix = self.view.detailedContact(contact, company)
-                                new_data = choix[3:]
-                                print(new_data)
-                                if choix == "SUPPRIMER":
-                                    self.userDAO.delete_contact(id)
-                                elif choix.startswith("NO "):
-                                    self.userDAO.update_contact(contact.id, company.id, new_data, contact.email, contact.phone, contact.signatory)
-                                elif choix.startswith("EM "):
-                                    self.userDAO.update_contact(contact.id, company.id, contact.name, new_data, contact.phone, contact.signatory)
-                                elif choix.startswith("TE "):
-                                    self.userDAO.update_contact(contact.id, company.id, contact.name, contact.email, new_data, contact.signatory)
-                                elif choix == "SI Oui":
-                                    self.userDAO.update_contact(contact.id, company.id, contact.name, contact.email, contact.phone, 1)
-                                elif choix == "SI Non":
-                                    self.userDAO.update_contact(contact.id, company.id, contact.name, contact.email, contact.phone, 0)
-                                elif choix == "QUIT":
-                                    return choix
-                                else: 
-                                    print("commande inconnue")
-                        elif choix == "QUIT":
-                            return choix
-                        else: 
-                            print("commande inconnue")
+    def client_main_choice(self, choix):
+        match choix:
+            case 'CR':
+                self.create_company()
+            case str(c) if c.startswith("A"):
+                id = c[1:]
+                self.handle_company_modification(id)
+            case "QUIT":
+                return choix
+
+    def create_company(self):
+        compagny_name = self.view.createcompany(self.user)
+        self.userDAO.add_company(compagny_name, self.user.id)
+
+    def handle_company_modification(self, id):
+        choix = None
+        while choix not in ['LIST', 'RET', 'QUIT', 'SUPPRIMER']:
+            company = self.userDAO.get_company(id)
+            contacts = self.userDAO.get_all_contact_by_company_id(id)
+            choix = self.view.totalViewCompagny(self.user, company, contacts)
+            self.process_company_modification_choice(choix, company, contacts)
+
+    def process_company_modification_choice(self, choix, company, contacts):
+        match choix:
+            case 'CR':
+                self.create_contact(company)
+            case 'RECUPERER':
+                self.recover_company(company)
+            case 'SUPPRIMER':
+                self.delete_company(company)
+            case str(c) if c.startswith("MN "):
+                new_data = c[3:]
+                self.update_company_name(company, new_data)
+            case str(c) if c.startswith("MA "):
+                new_data = c[3:]
+                self.update_company_address(company, new_data)
+            case str(c) if c.startswith("A"):
+                id_contact = c[1:]
+                self.handle_contact_modification(id_contact, company)
+            case "QUIT":
+                return choix
+            case _:
+                print("commande inconnue")
+
+    def create_contact(self, company):
+        if self.user.authorisation('Sale') and self.user.id == company.user_id:
+            name, email, phone, signatory = self.view.createcontact(company, self.user)
+            self.userDAO.add_contact(company.id, name, email, phone, signatory)
+        else:
+            self.view.notautorized(self.user)
+
+    def recover_company(self, company):
+        self.userDAO.update_company(company.id, company.company_name, company.address, self.user.id)
+
+    def delete_company(self, company):
+        if self.user.authorisation('Sale') and self.user.id == company.user_id:
+            self.userDAO.delete_company(company.id)
+        else:
+            self.view.notautorized(self.user)
+
+    def update_company_name(self, company, new_data):
+        if self.user.authorisation('Sale') and self.user.id == company.user_id:
+            self.userDAO.update_company(company.id, new_data, company.address, company.user_id)
+        else:
+            self.view.notautorized(self.user)
+
+    def update_company_address(self, company, new_data):
+        if self.user.authorisation('Sale') and self.user.id == company.user_id:
+            self.userDAO.update_company(company.id, company.company_name, new_data, company.user_id)
+        else:
+            self.view.notautorized(self.user)
+
+    def handle_contact_modification(self, id_contact, company):
+        choix = None
+        while choix not in ['ENTR', 'RET', 'QUIT', 'SUPPRIMER']:
+            contact = self.userDAO.get_contact(id_contact)
+            choix = self.view.detailedContact(contact, company)
+            self.process_contact_modification_choice(choix, contact, company)
+
+    def process_contact_modification_choice(self, choix, contact, company):
+        new_data = choix[3:]
+        print(new_data)
+        
+        match choix:
+            case "SUPPRIMER":
+                self.userDAO.delete_contact(contact.id)
+            case str(c) if c.startswith("NO "):
+                self.userDAO.update_contact(contact.id, company.id, new_data, contact.email, contact.phone, contact.signatory)
+            case str(c) if c.startswith("EM "):
+                self.userDAO.update_contact(contact.id, company.id, contact.name, new_data, contact.phone, contact.signatory)
+            case str(c) if c.startswith("TE "):
+                self.userDAO.update_contact(contact.id, company.id, contact.name, contact.email, new_data, contact.signatory)
+            case "SI Oui":
+                self.userDAO.update_contact(contact.id, company.id, contact.name, contact.email, contact.phone, 1)
+            case "SI Non":
+                self.userDAO.update_contact(contact.id, company.id, contact.name, contact.email, contact.phone, 0)
+            case "QUIT":
+                return choix
+            case _:
+                print("commande inconnue")
                             
     def boucleContracts(self):
         if self.user.authorisation('Admin') or self.user.authorisation('Gestion') or self.user.authorisation('Sale') or self.user.authorisation('Support'):

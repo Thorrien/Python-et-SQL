@@ -1,6 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine, MetaData, inspect
-from app.models.models import User, event_contract, Base, Role, Company, Event, Contact, Contract
+from app.models.models import User, event_contract, Base, Role, Company, Event, Contact, Contract, Text
 from app.utils import config
 
 
@@ -774,5 +774,29 @@ class UserDAO:
         except Exception as e:
             print(f"Error: {e}")
             return None
+        finally:
+            session.close()
+            
+    def get_text(self, id: int):
+        session = self.Session()
+        try:
+            text = session.query(Text).filter(Text.id == id).one_or_none()
+            return text
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            session.close()
+            
+    def update_text(self, id: int, text: str):
+        session = self.Session()
+        try:
+            texte = session.query(Text).filter(Text.id == id).one_or_none()
+            if texte:
+                texte.id = id
+                texte.data = text
+                session.commit()
+        except Exception as e:
+            session.rollback()
+            print(f"Error: {e}")
         finally:
             session.close()

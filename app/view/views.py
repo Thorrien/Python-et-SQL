@@ -48,12 +48,12 @@ class View :
         console.print(second_line)
 
     
-    def logtrue(self, user):
+    def logtrue(self, user, text):
         self.title(user)
         console = Console()
         console.rule(f"Bienvenue {user.nom}")
         console.print("")
-        console.print("Message de la direction : Nous vous informons que le pot de départ de M. Chauvin aura lieu le 19 septembre 2024 en salle 25A. À cette occasion, la direction présentera son successeur, M. Martin. Nous comptons sur votre présence pour partager ce moment convivial.")
+        console.print(f"Message de la direction : {text}")
         console.print("")
         sleep(3)
         
@@ -93,9 +93,22 @@ class View :
             table.add_row("MO", "Modifier le message d'accueil")
         else:
             table.add_row("[red][strike]MO[/strike][/red]", "[red]Modifier le message d'accueil[/red]🔒")
+        if  user.authorisation('Gestion'):
+            table.add_row("SU", "Gestion des éléments non attribués")
+        else:
+            table.add_row("[red][strike]SU[/strike][/red]", "[red]Gestion des éléments non attribués[/red]🔒")
         table.add_row("QUIT", "Quitter")
         console.print(table)
-        valid_choix = ["US", "CO", "EV", "CL", "MO", "QUIT"]
+        if user.authorisation('Gestion') :
+            invalid_choix = []
+            valid_choix = ["US", "CO", "EV", "CL", "MO", "SU", "QUIT"]
+        elif user.authorisation('Admin') :
+            invalid_choix = [ "MO", "SU"]
+            valid_choix = ["US", "CO", "EV", "CL", "QUIT"]
+        else:
+            invalid_choix = ["US", "MO", "SU"]
+            valid_choix = ["CO", "EV", "CL", "QUIT"]
+            
         while True:
             choix = input('Votre choix : ')
             if choix in valid_choix:
@@ -461,7 +474,7 @@ class View :
             console.print("")
         else:
             tablechoix.add_row("[red][strike]CR[/red][/strike]", "[red]Créer un nouveau contact[/red]")
-            if company.user_id is None: 
+            if company.user_id is None and user.authorisation('Sale'): 
                 tablechoix.add_row("RECUPERER", "Récupérer le dossier de l'entreprise")
             tablechoix.add_row("A<id>", "Afficher le contact <id> de l'entreprise")
             tablechoix.add_row("[red][strike]MN <Nouvelle donnée>[/red][/strike]", "[red]Modifier le nom de l'entreprise par <Nouvelle donnée>[/red]🔒")
@@ -1384,3 +1397,124 @@ class View :
             else:
                 console.print("[red]Choix invalide. Veuillez essayer à nouveau.[/red]")
 
+
+    def getText(self, user) :
+        if user.authorisation("Gestion"):
+            console = Console()
+            console.rule(f"Création d'un nouveau message de la direction")
+            console.print("")
+            console.print("Votre message de la direction : ")
+            data = str(input('==>'))
+            return data
+        
+    def logWithoutUser(self, user, events, companys):
+        console = Console()
+        console.rule(f"Détail de tous les éléments non attribués ")
+        console.print("") 
+
+        events_id = []
+        companys_id = []
+        valid_choices = ["RET", "QUIT"]
+
+        def create_table(liste, text):
+            table = Table(title=f"{text}", box=None)
+            if text == 'Evènements':
+                table.add_column("id", justify="left", style="white", no_wrap=True)
+                table.add_column("Participants", justify="left", style="white", no_wrap=True)
+                table.add_column("Date de début", justify="left", style="white", no_wrap=True )
+            else : 
+                table.add_column("id", justify="left", style="white", no_wrap=True)
+                table.add_column("Nom", justify="left", style="white", no_wrap=True)
+            table.add_row("", "")
+            for element in liste:
+                if text == 'Evènements':
+                    table.add_row(str(element.id), str(element.attendees), element.event_date_start.strftime("%Y-%m-%d %H:%M:%S"))
+                    valid_choices.append(f"AE{element.id}")
+                else:
+                    table.add_row(str(element.id), element.company_name)
+                    valid_choices.append(f"AC{element.id}")
+
+            return table
+        
+        table1 = create_table(events, 'Evènements')
+        table2 = create_table(companys, 'Entreprises')
+
+        console.print("-" * console.width)
+        
+        console.print(Columns([table1, table2], padding=(0, 10)))
+        console.print("")
+        console.print("-" * console.width)
+        centered_text = Text("Choix d'actions", style="bold green")
+        console.print(Align.center(centered_text))
+        
+        tablechoix = Table(box=None)
+        tablechoix.add_column("Choix", justify="left", style="green", no_wrap=True)
+        tablechoix.add_column("Description", justify="left", style="white")
+        
+        tablechoix.add_row("", "")
+        tablechoix.add_row("AE<id>", "Attribuer l'évènement <id>")
+        tablechoix.add_row("AC<id>", "Attribuer l'entreprise <id>")
+        tablechoix.add_row("RET", "Retour au menu principal")
+        tablechoix.add_row("QUIT", "Quitter le programme")
+        console.print("")
+
+        console.print(tablechoix)
+        console.print("")
+
+        while True:
+            console.print("Votre choix [#AAAAAA](RET, AE5 ...)[/#AAAAAA] :")
+            choix = input('==>')
+            if choix in valid_choices:
+                return choix
+            else:
+                console.print("[red]Choix invalide. Veuillez essayer à nouveau.[/red]")
+                
+    def chooseUser(self, users):
+        console = Console()
+        console.rule(f"Liste des persones correpondantes")
+        console.print("") 
+        valid_choices = ["RET", "QUIT"]
+
+        def create_table(liste):
+            table = Table(title="Utilisateurs", box=None)
+            table.add_column("id", justify="left", style="white", no_wrap=True)
+            table.add_column("Nom", justify="left", style="white", no_wrap=True)
+            table.add_column("Email", justify="left", style="white", no_wrap=True )
+            table.add_row("", "")
+            for element in liste:
+                table.add_row(str(element.id), element.nom, element.email)
+                valid_choices.append(f"A{element.id}")
+            return table
+        
+        table1 = create_table(users)
+
+        console.print("-" * console.width)
+        console.print(table1)        
+        console.print("")
+        console.print("-" * console.width)
+        centered_text = Text("Choix d'actions", style="bold green")
+        console.print(Align.center(centered_text))
+        
+        tablechoix = Table(box=None)
+        tablechoix.add_column("Choix", justify="left", style="green", no_wrap=True)
+        tablechoix.add_column("Description", justify="left", style="white")
+        
+        tablechoix.add_row("", "")
+        tablechoix.add_row("A<id>", "Attribuer l'évènement a <id>")
+        tablechoix.add_row("RET", "Retour au menu principal")
+        tablechoix.add_row("QUIT", "Quitter le programme")
+        console.print("")
+
+        console.print(tablechoix)
+        console.print("")
+
+        while True:
+            console.print("Votre choix [#AAAAAA](A5, QUIT ...)[/#AAAAAA] :")
+            choix = input('==>')
+            if choix in valid_choices:
+                if choix.startswith('A'):
+                    return choix[1:]
+                else: 
+                    return choix
+            else:
+                console.print("[red]Choix invalide. Veuillez essayer à nouveau.[/red]")
