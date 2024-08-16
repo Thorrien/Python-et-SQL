@@ -388,10 +388,10 @@ class Controler:
 
     def create_event(self, company, contrat, supports):
         if self.user.authorisation('Sale') and self.user.id == company.user_id:
-            event_date_start, event_date_end, location, support_id, attendees, notes = (
+            date_start, date_end, location, support_id, attendees, notes = (
                     self.view.createevent(company, self.user, supports)
                 )
-            eventid = self.userDAO.add_event(event_date_start, event_date_end,
+            eventid = self.userDAO.add_event(date_start, date_end,
                                              location, support_id, attendees,
                                              notes)
             self.userDAO.add_event_contract(eventid, contrat.id)
