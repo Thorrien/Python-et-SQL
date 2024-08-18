@@ -1,11 +1,19 @@
 from app.view.views import View
 from datetime import datetime
+from app.view.userviews import UserView
+from app.view.clientview import ClientView
+from app.view.contractview import ContractView
+from app.view.eventview import EventView
 
 
 class Controler:
 
     def __init__(self, user, userDAO):
         self.view = View()
+        self.userview = UserView()
+        self.clientview = ClientView()
+        self.contractview = ContractView()
+        self.eventview = EventView()
         self.userDAO = userDAO
         self.user = user
 
@@ -44,12 +52,12 @@ class Controler:
         while choix not in ['RET', 'QUIT']:
             companys = self.userDAO.get_all_company_without_user()
             events = self.userDAO.get_all_events_without_user()
-            choix = self.view.logWithoutUser(self.user, events, companys)
+            choix = self.userview.logWithoutUser(self.user, events, companys)
             if choix.startswith("AE"):
                 id = choix[2:]
                 event = self.userDAO.get_event(id)
                 users = self.userDAO.get_user_by_role(4)
-                user_id = self.view.chooseUser(users)
+                user_id = self.userview.chooseUser(users)
                 self.userDAO.update_event(event.id, event.event_date_start,
                                           event.event_date_end, event.location,
                                           user_id, event.attendees,
@@ -59,7 +67,7 @@ class Controler:
                 id = choix[2:]
                 company = self.userDAO.get_company(id)
                 users = self.userDAO.get_user_by_role(3)
-                user_id = self.view.chooseUser(users)
+                user_id = self.userview.chooseUser(users)
                 self.userDAO.update_company(company.id, company.company_name,
                                             company.address, user_id)
                 return 'LIST'
@@ -74,7 +82,7 @@ class Controler:
             choix = None
             while choix not in ['RET', 'QUIT']:
                 users = self.userDAO.get_all_user_with_role_name()
-                choix = self.view.logutilisateurs(self.user, users)
+                choix = self.userview.logutilisateurs(self.user, users)
                 self.main_choice(choix)
         else:
             self.view.notautorized(self.user)
@@ -93,17 +101,17 @@ class Controler:
                 id = choix[1:]
                 self.userDAO.delete_user(id)
             case "QUIT":
-                return choix
+                quit()
 
     def create_user(self):
-        nom, email, mot_de_passe, role = self.view.createuserview()
+        nom, email, mot_de_passe, role = self.userview.createuserview()
         self.userDAO.add_user(nom, email, mot_de_passe, int(role))
 
     def handle_user_modification(self, id):
         choix = None
         while choix not in ['LIST', 'RET', 'QUIT', 'SUPPRIMER']:
             affiche = self.userDAO.get_user(id)
-            choix = self.view.soloUserView(self.user, affiche)
+            choix = self.userview.soloUserView(self.user, affiche)
             new_data = choix[3:]
             match choix:
                 case "SUPPRIMER":
@@ -129,7 +137,7 @@ class Controler:
                     self.userDAO.update_user(affiche.id, affiche.nom,
                                              affiche.email, 4)
                 case "QUIT":
-                    return choix
+                    quit()
                 case _:
                     print("commande inconnue")
 
@@ -143,7 +151,7 @@ class Controler:
             choix = None
             while choix not in ['RET', 'QUIT']:
                 companys = self.userDAO.get_all_company()
-                choix = self.view.logclients(self.user, companys)
+                choix = self.clientview.logclients(self.user, companys)
                 self.client_main_choice(choix)
         else:
             self.view.notautorized(self.user)
@@ -156,10 +164,10 @@ class Controler:
                 id = choix[1:]
                 self.handle_company_modification(id)
             case "QUIT":
-                return choix
+                quit()
 
     def create_company(self):
-        compagny_name = self.view.createcompany(self.user)
+        compagny_name = self.clientview.createcompany(self.user)
         self.userDAO.add_company(compagny_name, self.user.id)
 
     def handle_company_modification(self, id):
@@ -167,7 +175,7 @@ class Controler:
         while choix not in ['LIST', 'RET', 'QUIT', 'SUPPRIMER']:
             company = self.userDAO.get_company(id)
             contacts = self.userDAO.get_all_contact_by_company_id(id)
-            choix = self.view.totalViewCompagny(self.user, company, contacts)
+            choix = self.clientview.totalViewCompagny(self.user, company, contacts)
             self.process_company_modification_choice(choix, company, contacts)
 
     def process_company_modification_choice(self, choix, company, contacts):
@@ -188,13 +196,13 @@ class Controler:
                 id_contact = choix[1:]
                 self.handle_contact_modification(id_contact, company)
             case "QUIT":
-                return choix
+                quit()
             case _:
                 print("commande inconnue")
 
     def create_contact(self, company):
         if self.user.authorisation('Sale') and self.user.id == company.user_id:
-            name, email, phone, signatory = self.view.createcontact(company,
+            name, email, phone, signatory = self.clientview.createcontact(company,
                                                                     self.user)
             self.userDAO.add_contact(company.id, name, email, phone, signatory)
         else:
@@ -228,7 +236,7 @@ class Controler:
         choix = None
         while choix not in ['ENTR', 'RET', 'QUIT', 'SUPPRIMER']:
             contact = self.userDAO.get_contact(id_contact)
-            choix = self.view.detailedContact(contact, company)
+            choix = self.clientview.detailedContact(contact, company)
             self.process_contact_modification_choice(choix, contact, company)
 
     def process_contact_modification_choice(self, choix, contact, company):
@@ -259,7 +267,7 @@ class Controler:
                                             contact.name, contact.email,
                                             contact.phone, 0)
             case "QUIT":
-                return choix
+                quit()
             case _:
                 print("commande inconnue")
 
@@ -274,7 +282,7 @@ class Controler:
             while choix not in ['RET', 'QUIT']:
                 contrats = self.userDAO.get_all_contract()
                 supports = self.userDAO.get_user_by_role(4)
-                choix = self.view.logcontracts(self.user, contrats,
+                choix = self.contractview.logcontracts(self.user, contrats,
                                                self.userDAO)
                 self.handle_main_choice(choix, contrats, supports)
 
@@ -293,12 +301,12 @@ class Controler:
                 self.delete_contract(choix, contrats)
 
             case "QUIT":
-                return choix
+                quit()
 
     def create_contract(self, choix):
         id = choix[2:]
         company = self.userDAO.get_company(id)
-        total_amont, current_amont, sign = self.view.createcontract(self.user,
+        total_amont, current_amont, sign = self.contractview.createcontract(self.user,
                                                                     company)
         sign_flag = 1 if sign else 0
         self.userDAO.add_contract(company.id, self.user.id, total_amont,
@@ -313,7 +321,7 @@ class Controler:
             contrat = self.userDAO.get_contract(contratId)
             company = self.userDAO.get_company(contrat.compagny_id)
             events = self.userDAO.get_event_for_contract(contrat.id)
-            choix = self.view.contractview(self.user, company, contrat, events,
+            choix = self.contractview.contractview(self.user, company, contrat, events,
                                            self.userDAO)
             self.contract_choice(choix, contrat, company, events, supports)
 
@@ -348,7 +356,7 @@ class Controler:
         choix = None
         while choix not in ['LIST', 'RET', 'QUIT']:
             event = self.userDAO.get_event(id_event)
-            choix = self.view.eventview(self.user, event, self.userDAO)
+            choix = self.eventview.eventview(self.user, event, self.userDAO)
             self.event_choice(choix, event)
 
     def event_choice(self, choix, event):
@@ -357,8 +365,10 @@ class Controler:
             case "SUPPRIMER":
                 self.userDAO.delete_event(event.id)
                 return 'LIST'
-            case "RET" | "QUIT":
+            case "RET":
                 return choix
+            case "QUIT":
+                quit()
             case _ if choix.startswith("MS"):
                 self.userDAO.update_event(
                     event.id, datetime.strptime(new_data,
@@ -389,7 +399,7 @@ class Controler:
     def create_event(self, company, contrat, supports):
         if self.user.authorisation('Sale') and self.user.id == company.user_id:
             date_start, date_end, location, support_id, attendees, notes = (
-                    self.view.createevent(company, self.user, supports)
+                    self.contractview.createevent(company, self.user, supports)
                 )
             eventid = self.userDAO.add_event(date_start, date_end,
                                              location, support_id, attendees,
@@ -436,7 +446,7 @@ class Controler:
         while choix not in ['LIST', 'RET', 'QUIT']:
             company = self.userDAO.get_company(id)
             contacts = self.userDAO.get_all_contact_by_company_id(id)
-            choix = self.view.LiteViewCompagny(self.user, company, contacts)
+            choix = self.clientview.LiteViewCompagny(self.user, company, contacts)
 
     def delete_contract(self, choix, contrats):
         id = int(choix[1:])
@@ -458,9 +468,9 @@ class Controler:
 
     def display_events_based_on_role(self, events):
         if self.user.authorisation('Support'):
-            return self.view.myMensualEvents(self.user, events)
+            return self.eventview.myMensualEvents(self.user, events)
         else:
-            return self.view.TotalEvents(self.user, events)
+            return self.eventview.TotalEvents(self.user, events)
 
     def handle_events_choice(self, choix, events):
         match choix:
@@ -476,7 +486,7 @@ class Controler:
     def handle_total_events_choice(self, events):
         choix = None
         while choix not in ['RET', 'QUIT']:
-            choix = self.view.myTotalEvents(self.user, events)
+            choix = self.eventview.myTotalEvents(self.user, events)
             if choix.startswith("A"):
                 self.boucleSoloEvents(choix)
             elif choix == "TT":
@@ -487,7 +497,7 @@ class Controler:
     def handle_tt_events_choice(self, events):
         choix = None
         while choix not in ['RET', 'QUIT']:
-            choix = self.view.TotalEvents(self.user, events)
+            choix = self.eventview.TotalEvents(self.user, events)
             if choix.startswith("A"):
                 self.boucleSoloEvents(choix)
             else:
@@ -498,15 +508,17 @@ class Controler:
         choix = None
         while choix not in ['LIST', 'RET', 'QUIT']:
             event = self.userDAO.get_event(id_event)
-            choix = self.view.eventview(self.user, event, self.userDAO)
+            choix = self.eventview.eventview(self.user, event, self.userDAO)
             new_data = choix[3:]
 
             match choix:
                 case "SUPPRIMER":
                     self.userDAO.delete_event(event.id)
                     return 'LIST'
-                case "RET" | "QUIT":
+                case "RET":
                     return choix
+                case "QUIT":
+                    quit()
                 case _ if choix.startswith("MS"):
                     self.userDAO.update_event(event.id, datetime.strptime(
                         new_data, "%d/%m/%Y %H:%M"), event.event_date_end,
