@@ -206,7 +206,7 @@ class UserView:
 
         valid_choices = ["RET", "QUIT"]
 
-        def create_table(liste, text):
+        def create_table2(liste, text):
             table = Table(title=f"{text}", box=None)
             if text == 'Evènements':
                 table.add_column("id", justify="left", style="white",
@@ -232,9 +232,8 @@ class UserView:
                     valid_choices.append(f"AC{element.id}")
 
             return table
-
-        table1 = create_table(events, 'Evènements')
-        table2 = create_table(companys, 'Entreprises')
+        table1 = create_table2(events, 'Evènements')
+        table2 = create_table2(companys, 'Entreprises')
 
         console.print("-" * console.width)
 

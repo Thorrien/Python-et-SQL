@@ -71,6 +71,8 @@ class Controler:
                 self.userDAO.update_company(company.id, company.company_name,
                                             company.address, user_id)
                 return 'LIST'
+            elif choix == ("QUIT"):
+                quit()
             else:
                 return 'LIST'
 
@@ -163,19 +165,29 @@ class Controler:
             case _ if choix.startswith("A"):
                 id = choix[1:]
                 self.handle_company_modification(id)
+            case _ if choix.startswith("M"):
+                id = choix[1:]
+                self.handle_company_modification(id)
+            case _ if choix.startswith("S"):
+                id = choix[1:]
+                self.delete_company(self.userDAO.get_company(id),
+                                    self.userDAO.get_all_contact_by_company_id(
+                                        id))
+                return 'LIST'
             case "QUIT":
                 quit()
 
     def create_company(self):
-        compagny_name = self.clientview.createcompany(self.user)
-        self.userDAO.add_company(compagny_name, self.user.id)
+        compagny_name, adress = self.clientview.createcompany(self.user)
+        self.userDAO.add_company(compagny_name, self.user.id, adress)
 
     def handle_company_modification(self, id):
         choix = None
         while choix not in ['LIST', 'RET', 'QUIT', 'SUPPRIMER']:
             company = self.userDAO.get_company(id)
             contacts = self.userDAO.get_all_contact_by_company_id(id)
-            choix = self.clientview.totalViewCompagny(self.user, company, contacts)
+            choix = self.clientview.totalViewCompagny(self.user,
+                                                      company, contacts)
             self.process_company_modification_choice(choix, company, contacts)
 
     def process_company_modification_choice(self, choix, company, contacts):
@@ -185,7 +197,7 @@ class Controler:
             case 'RECUPERER':
                 self.recover_company(company)
             case 'SUPPRIMER':
-                self.delete_company(company)
+                self.delete_company(company, contacts)
             case _ if choix.startswith("MN "):
                 new_data = choix[3:]
                 self.update_company_name(company, new_data)
@@ -202,8 +214,9 @@ class Controler:
 
     def create_contact(self, company):
         if self.user.authorisation('Sale') and self.user.id == company.user_id:
-            name, email, phone, signatory = self.clientview.createcontact(company,
-                                                                    self.user)
+            name, email, phone, signatory = self.clientview.createcontact(
+                company,
+                self.user)
             self.userDAO.add_contact(company.id, name, email, phone, signatory)
         else:
             self.view.notautorized(self.user)
@@ -212,8 +225,11 @@ class Controler:
         self.userDAO.update_company(company.id, company.company_name,
                                     company.address, self.user.id)
 
-    def delete_company(self, company):
+    def delete_company(self, company, contacts):
         if self.user.authorisation('Sale') and self.user.id == company.user_id:
+            if contacts:
+                for element in contacts:
+                    self.userDAO.delete_contact(element.id)
             self.userDAO.delete_company(company.id)
         else:
             self.view.notautorized(self.user)
@@ -283,7 +299,7 @@ class Controler:
                 contrats = self.userDAO.get_all_contract()
                 supports = self.userDAO.get_user_by_role(4)
                 choix = self.contractview.logcontracts(self.user, contrats,
-                                               self.userDAO)
+                                                       self.userDAO)
                 self.handle_main_choice(choix, contrats, supports)
 
     def handle_main_choice(self, choix, contrats, supports):
@@ -306,8 +322,9 @@ class Controler:
     def create_contract(self, choix):
         id = choix[2:]
         company = self.userDAO.get_company(id)
-        total_amont, current_amont, sign = self.contractview.createcontract(self.user,
-                                                                    company)
+        total_amont, current_amont, sign = self.contractview.createcontract(
+            self.user,
+            company)
         sign_flag = 1 if sign else 0
         self.userDAO.add_contract(company.id, self.user.id, total_amont,
                                   current_amont, sign_flag)
@@ -321,8 +338,9 @@ class Controler:
             contrat = self.userDAO.get_contract(contratId)
             company = self.userDAO.get_company(contrat.compagny_id)
             events = self.userDAO.get_event_for_contract(contrat.id)
-            choix = self.contractview.contractview(self.user, company, contrat, events,
-                                           self.userDAO)
+            choix = self.contractview.contractview(self.user, company,
+                                                   contrat, events,
+                                                   self.userDAO)
             self.contract_choice(choix, contrat, company, events, supports)
 
     def contract_choice(self, choix, contrat, company, events, supports):
@@ -335,6 +353,7 @@ class Controler:
 
             case "SUPPRIMER":
                 self.delete_contract_if_authorized(contrat, company)
+                return 'LIST'
 
             case _ if choix.startswith("MT "):
                 self.update_contract_total(choix, contrat, company)
@@ -348,8 +367,11 @@ class Controler:
             case "MS NS":
                 self.update_contract_sign(contrat, company, sign=0)
 
-            case "QUIT" | "RET":
+            case "RET":
                 return choix
+
+            case "QUIT":
+                quit()
 
     def view_event(self, choix):
         id_event = choix[1:]
@@ -410,7 +432,11 @@ class Controler:
 
     def delete_contract_if_authorized(self, contrat, company):
         if self.user.authorisation('Sale') and self.user.id == company.user_id:
+            events = self.userDAO.get_event_for_contract(contrat.id)
+            for element in events:
+                self.userDAO.delete_event(element.id)
             self.userDAO.delete_contract(contrat.id)
+            return 'LIST'
         else:
             self.view.notautorized(self.user)
 
@@ -446,11 +472,15 @@ class Controler:
         while choix not in ['LIST', 'RET', 'QUIT']:
             company = self.userDAO.get_company(id)
             contacts = self.userDAO.get_all_contact_by_company_id(id)
-            choix = self.clientview.LiteViewCompagny(self.user, company, contacts)
+            choix = self.clientview.LiteViewCompagny(self.user,
+                                                     company, contacts)
 
     def delete_contract(self, choix, contrats):
         id = int(choix[1:])
         contrat = contrats[id]
+        events = self.userDAO.get_event_for_contract(contrat.id)
+        for element in events:
+            self.userDAO.delete_event(element.id)
         self.userDAO.delete_contract(contrat.id)
 
     def boucleEvents(self):
@@ -510,7 +540,6 @@ class Controler:
             event = self.userDAO.get_event(id_event)
             choix = self.eventview.eventview(self.user, event, self.userDAO)
             new_data = choix[3:]
-
             match choix:
                 case "SUPPRIMER":
                     self.userDAO.delete_event(event.id)
@@ -519,28 +548,28 @@ class Controler:
                     return choix
                 case "QUIT":
                     quit()
-                case _ if choix.startswith("MS"):
+                case _ if choix.startswith("MS "):
                     self.userDAO.update_event(event.id, datetime.strptime(
                         new_data, "%d/%m/%Y %H:%M"), event.event_date_end,
                         event.location, event.id_user, event.attendees,
                         event.notes)
-                case _ if choix.startswith("ME"):
+                case _ if choix.startswith("ME "):
                     self.userDAO.update_event(
                         event.id, event.event_date_start,
                         datetime.strptime(new_data, "%d/%m/%Y %H:%M"),
                         event.location, event.id_user, event.attendees,
                         event.notes)
-                case _ if choix.startswith("ML"):
+                case _ if choix.startswith("ML "):
                     self.userDAO.update_event(event.id, event.event_date_start,
                                               event.event_date_end, new_data,
                                               event.id_user, event.attendees,
                                               event.notes)
-                case _ if choix.startswith("MA"):
+                case _ if choix.startswith("MA "):
                     self.userDAO.update_event(event.id, event.event_date_start,
                                               event.event_date_end,
                                               event.location, event.id_user,
                                               new_data, event.notes)
-                case _ if choix.startswith("MN"):
+                case _ if choix.startswith("MN "):
                     self.userDAO.update_event(event.id, event.event_date_start,
                                               event.event_date_end,
                                               event.location, event.id_user,

@@ -214,12 +214,12 @@ class UserDAO:
         finally:
             session.close()
 
-    def add_company(self, name: str, user_id: int, adress: str):
+    def add_company(self, name: str, user_id: int, address: str):
         session = self.Session()
         try:
             new_company = Company(
                 company_name=name,
-                adress=adress,
+                address=address,
                 user_id=user_id
                 )
             session.add(new_company)
@@ -276,8 +276,7 @@ class UserDAO:
         session = self.Session()
         try:
             companys = session.query(Company).filter(
-                Company.user_id is None
-                ).all()
+                Company.user_id == None).all()
             return companys
         except Exception as e:
             print(f"Error: {e}")
@@ -355,7 +354,7 @@ class UserDAO:
     def get_all_events_without_user(self):
         session = self.Session()
         try:
-            events = session.query(Event).filter(Event.id_user is None).all()
+            events = session.query(Event).filter(Event.id_user == None).all()
             return events
         except Exception as e:
             print(f"Error: {e}")
@@ -588,7 +587,7 @@ class UserDAO:
         session = self.Session()
         try:
             contracts = session.query(Contract).filter(
-                Contract.user_id is None
+                Contract.user_id == None
                 ).all()
             return contracts
         except Exception as e:

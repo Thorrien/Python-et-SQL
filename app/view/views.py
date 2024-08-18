@@ -50,13 +50,6 @@ class View :
         console.print(f"Message de la direction : {text}")
         console.print("")
         sleep(3)
-        
-    #def logcontrats(self, user):
-     #   self.title(user)
-     #   console = Console()
-     #   console.rule("Gestion des contrats")
-     #   console.print("")
-    #  console.print("")
 
     def menuprincipalgestion(self, user):
         console = Console()
@@ -65,7 +58,7 @@ class View :
         table = Table(box=None)
         table.add_column("Choix", justify="center", style="green", no_wrap=True)
         table.add_column("Description", justify="left", style="white")
-        
+
         table.add_row("", "")
         if user.authorisation('Admin') or user.authorisation('Gestion'):
             table.add_row("US", "Gérer les comptes utilisateurs")
@@ -93,16 +86,13 @@ class View :
             table.add_row("[red][strike]SU[/strike][/red]", "[red]Gestion des éléments non attribués[/red]🔒")
         table.add_row("QUIT", "Quitter")
         console.print(table)
-        if user.authorisation('Gestion') :
-            invalid_choix = []
+        if user.authorisation('Gestion'):
             valid_choix = ["US", "CO", "EV", "CL", "MO", "SU", "QUIT"]
-        elif user.authorisation('Admin') :
-            invalid_choix = [ "MO", "SU"]
+        elif user.authorisation('Admin'):
             valid_choix = ["US", "CO", "EV", "CL", "QUIT"]
         else:
-            invalid_choix = ["US", "MO", "SU"]
             valid_choix = ["CO", "EV", "CL", "QUIT"]
-            
+
         while True:
             choix = input('Votre choix : ')
             if choix in valid_choix:
@@ -119,10 +109,10 @@ class View :
         console = Console()
         console.rule("Fin de la page")
 
-    def getText(self, user) :
+    def getText(self, user):
         if user.authorisation("Gestion"):
             console = Console()
-            console.rule(f"Création d'un nouveau message de la direction")
+            console.rule("Création d'un nouveau message de la direction")
             console.print("")
             console.print("Votre message de la direction : ")
             data = str(input('==>'))
