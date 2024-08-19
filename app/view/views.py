@@ -6,33 +6,52 @@ from rich.text import Text
 from rich.table import Table
 from datetime import datetime
 from time import sleep
-import re
-from rich.columns import Columns
-import calendar
-import locale
 
 
-class View :
+class View:
 
     def ascii(self):
-        rprint("[bold green]      ___           ___                     ___           ___                        ___           ___                 [/bold green]")
-        rprint("[bold green]     /  /\         /  /\      ___          /  /\         /  /\          ___         /  /\         /__/\          ___   [/bold green]")
-        rprint("[bold green]    /  /:/_       /  /::\    /  /\        /  /:/        /  /:/_        /__/\       /  /:/_        \  \:\        /  /\  [/bold green]")
-        rprint("[bold green]   /  /:/ /\     /  /:/\:\  /  /:/       /  /:/        /  /:/ /\       \  \:\     /  /:/ /\        \  \:\      /  /:/  [/bold green]")
-        rprint("[bold green]  /  /:/ /:/_   /  /:/~/:/ /__/::\      /  /:/  ___   /  /:/ /:/_       \  \:\   /  /:/ /:/_   _____\__\:\    /  /:/   [/bold green]")
-        rprint("[bold green] /__/:/ /:/ /\ /__/:/ /:/  \__\/\:\__  /__/:/  /  /\ /__/:/ /:/ /\  ___  \__\:\ /__/:/ /:/ /\ /__/::::::::\  /  /::\   [/bold green]")
-        rprint("[bold green] \  \:\/:/ /:/ \  \:\/:/      \  \:\/\ \  \:\ /  /:/ \  \:\/:/ /:/ /__/\ |  |:| \  \:\/:/ /:/ \  \:\~~\~~\/ /__/:/\:\  [/bold green]")
-        rprint("[bold green]  \  \::/ /:/   \  \::/        \__\::/  \  \:\  /:/   \  \::/ /:/  \  \:\|  |:|  \  \::/ /:/   \  \:\  ~~~  \__\/  \:\ [/bold green]")
-        rprint("[bold green]   \  \:\/:/     \  \:\        /__/:/    \  \:\/:/     \  \:\/:/    \  \:\__|:|   \  \:\/:/     \  \:\           \  \:\ [/bold green]")
-        rprint("[bold green]    \  \::/       \  \:\       \__\/      \  \::/       \  \::/      \__\::::/     \  \::/       \  \:\           \__\/[/bold green]")
-        rprint("[bold green]     \__\/         \__\/                   \__\/         \__\/           ~~~~       \__\/         \__\/                [/bold green]")
+        rprint("[bold green]      ___           ___                     ___  "
+               "         ___                        ___           ___        "
+               "         [/bold green]")
+        rprint("[bold green]     /  /\         /  /\      ___          /  /\ "
+               "        /  /\          ___         /  /\         /__/\       "
+               "   ___   [/bold green]")
+        rprint("[bold green]    /  /:/_       /  /::\    /  /\        /  /:/ "
+               "       /  /:/_        /__/\       /  /:/_        \  \:\      "
+               "  /  /\  [/bold green]")
+        rprint("[bold green]   /  /:/ /\     /  /:/\:\  /  /:/       /  /:/  "
+               "      /  /:/ /\       \  \:\     /  /:/ /\        \  \:\     "
+               " /  /:/  [/bold green]")
+        rprint("[bold green]  /  /:/ /:/_   /  /:/~/:/ /__/::\      /  /:/ "
+               " ___   /  /:/ /:/_       \  \:\   /  /:/ /:/_   _____\__\:\ "
+               "   /  /:/   [/bold green]")
+        rprint("[bold green] /__/:/ /:/ /\ /__/:/ /:/  \__\/\:\__  /__/:/  "
+               "/  /\ /__/:/ /:/ /\  ___  \__\:\ /__/:/ /:/ /\ /__/::::::::\  / "
+               " /::\   [/bold green]")
+        rprint("[bold green] \  \:\/:/ /:/ \  \:\/:/      \  \:\/\ \  \:\ "
+               "/  /:/ \  \:\/:/ /:/ /__/\ |  |:| \  \:\/:/ /:/ \  \:\~~\~~\/ /_"
+               "_/:/\:\  [/bold green]")
+        rprint("[bold green]  \  \::/ /:/   \  \::/        \__\::/  \  \:"
+               "\  /:/   \  \::/ /:/  \  \:\|  |:|  \  \::/ /:/   \  \:\  ~~~  \_"
+               "_\/  \:\ [/bold green]")
+        rprint("[bold green]   \  \:\/:/     \  \:\        /__/:/    \  \:"
+               "\/:/     \  \:\/:/    \  \:\__|:|   \  \:\/:/     \  \:\          "
+               " \  \:\ [/bold green]")
+        rprint("[bold green]    \  \::/       \  \:\       \__\/      \  "
+               "\::/       \  \::/      \__\::::/     \  \::/       \  \:\        "
+               "   \__\/[/bold green]")
+        rprint("[bold green]     \__\/         \__\/                   \_"
+               "_\/         \__\/           ~~~~       \__\/         \__\/      "
+               "          [/bold green]")
         print("")
         print("")
         print("")
 
     def title(self, user):
         console = Console()
-        title_text = Text("EpicEvent", style="bold white on green", justify="center")
+        title_text = Text("EpicEvent", style="bold white on green",
+                          justify="center")
         title_panel = Panel(Align.center(title_text), style="bold")
         console.print(title_panel)
         current_date = datetime.now().strftime("%d/%m/%Y")
@@ -56,34 +75,41 @@ class View :
         console.rule("Menu principal")
         console.print("")
         table = Table(box=None)
-        table.add_column("Choix", justify="center", style="green", no_wrap=True)
+        table.add_column("Choix", justify="center", style="green",
+                         no_wrap=True)
         table.add_column("Description", justify="left", style="white")
 
         table.add_row("", "")
         if user.authorisation('Admin') or user.authorisation('Gestion'):
             table.add_row("US", "Gérer les comptes utilisateurs")
         else:
-            table.add_row("[red][strike]US[/strike][/red]", "[red]Gérer les comptes utilisateurs[/red]🔒")
+            table.add_row("[red][strike]US[/strike][/red]", "[red]Gérer "
+                          "les comptes utilisateurs[/red]🔒")
         if user.authorisation('Admin') or user.authorisation('Gestion') or user.authorisation('Sale') or user.authorisation('Support'):
             table.add_row("CL", "Gérer les clients")
         else:
-            table.add_row("[red][strike]CL[/red][/strike]", "[red]Gérer les clients[/red]🔒")
+            table.add_row("[red][strike]CL[/red][/strike]", "[red]Gérer "
+                          "les clients[/red]🔒")
         if user.authorisation('Admin') or user.authorisation('Gestion') or user.authorisation('Sale') or user.authorisation('Support'):
             table.add_row("CO", "Gérer les contrats")
         else:
-            table.add_row("[red][strike]CO[/red][/strike]", "[red]Gérer les contrats[/red]🔒")
+            table.add_row("[red][strike]CO[/red][/strike]", "[red]Gérer "
+                          "les contrats[/red]🔒")
         if user.authorisation('Admin') or user.authorisation('Gestion') or user.authorisation('Sale') or user.authorisation('Support'):
             table.add_row("EV", "Gérer les Events")
         else:
-            table.add_row("[red][strike]EV[/red][/strike]", "[red]Gérer les Events[/red]🔒")
+            table.add_row("[red][strike]EV[/red][/strike]", "[red]Gérer"
+                          " les Events[/red]🔒")
         if  user.authorisation('Gestion'):
             table.add_row("MO", "Modifier le message d'accueil")
         else:
-            table.add_row("[red][strike]MO[/strike][/red]", "[red]Modifier le message d'accueil[/red]🔒")
+            table.add_row("[red][strike]MO[/strike][/red]", "[red]Modifier "
+                          "le message d'accueil[/red]🔒")
         if  user.authorisation('Gestion'):
             table.add_row("SU", "Gestion des éléments non attribués")
         else:
-            table.add_row("[red][strike]SU[/strike][/red]", "[red]Gestion des éléments non attribués[/red]🔒")
+            table.add_row("[red][strike]SU[/strike][/red]", "[red]Gestion "
+                          "des éléments non attribués[/red]🔒")
         table.add_row("QUIT", "Quitter")
         console.print(table)
         if user.authorisation('Gestion'):
@@ -98,11 +124,13 @@ class View :
             if choix in valid_choix:
                 return choix
             else:
-                console.print("[red]Choix invalide. Veuillez essayer à nouveau.[/red]")
+                console.print("[red]Choix invalide. Veuillez essayer à "
+                              "nouveau.[/red]")
 
     def notautorized(self, user):
         console = Console()
-        console.rule(f"[red] {user.nom}, vous n'avez pas les droits permettant d'utiliser cette fonctionnalité[/red]")
+        console.rule(f"[red] {user.nom}, vous n'avez pas les droits"
+                     " permettant d'utiliser cette fonctionnalité[/red]")
         sleep(2)
 
     def base(self):

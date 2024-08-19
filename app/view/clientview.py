@@ -131,45 +131,47 @@ class ClientView:
 
     def createcompany(self, user):
         if user.authorisation('Sale'):
-            console = Console()
-            console.rule("Création d'une nouvelle société ")
-            console.print("")
-            console.print("[green] Le nom de la société [/green]")
-            nom = str(input('==>'))
-            console.print("[green] Adresse de la société [/green]")
-            adress = str(input('==>'))
+            choix = None
+            while choix != 'Oui':
+                console = Console()
+                console.rule("Création d'une nouvelle société ")
+                console.print("")
+                console.print("[green] Le nom de la société [/green]")
+                nom = str(input('==>'))
+                console.print("[green] Adresse de la société [/green]")
+                adress = str(input('==>'))
 
-            console.rule("Résumé de votre saisie pour confirmation")
-            console.print("")
-            tableconfirmation = Table(box=None)
-            tableconfirmation.add_column("Type", justify="left",
-                                         style="green", no_wrap=True)
-            tableconfirmation.add_column("Vos saisies", justify="left",
-                                         style="white")
-            tableconfirmation.add_row("", "")
-            tableconfirmation.add_row("Nom", f"{nom}")
-            tableconfirmation.add_row("Adresse", f"{adress}")
-            tableconfirmation.add_row("Gestionnaire", "Vous")
-            console.print(tableconfirmation)
+                console.rule("Résumé de votre saisie pour confirmation")
+                console.print("")
+                tableconfirmation = Table(box=None)
+                tableconfirmation.add_column("Type", justify="left",
+                                            style="green", no_wrap=True)
+                tableconfirmation.add_column("Vos saisies", justify="left",
+                                            style="white")
+                tableconfirmation.add_row("", "")
+                tableconfirmation.add_row("Nom", f"{nom}")
+                tableconfirmation.add_row("Adresse", f"{adress}")
+                tableconfirmation.add_row("Gestionnaire", "Vous")
+                console.print(tableconfirmation)
 
-            console.print("")
-            console.print("-" * console.width)
-            centered_text = Text("Confirmez vous votre saisie ?",
-                                 style="bold green")
-            console.print(Align.center(centered_text))
+                console.print("")
+                console.print("-" * console.width)
+                centered_text = Text("Confirmez vous votre saisie ?",
+                                    style="bold green")
+                console.print(Align.center(centered_text))
 
-            console.print("[green] Oui ou Non [/green]")
-            valid_role = ["Oui", "Non"]
-            while True:
-                choix = input('==>')
-                if choix in valid_role:
-                    if choix == "Oui":
-                        return nom, adress
+                console.print("[green] Oui ou Non [/green]")
+                valid_role = ["Oui", "Non"]
+                while True:
+                    choix = input('==>')
+                    if choix in valid_role:
+                        if choix == "Oui":
+                            return nom, adress
+                        else:
+                            break
                     else:
-                        break
-                else:
-                    console.print("[red]Choix invalide. "
-                                  "Veuillez essayer à nouveau.[/red]")
+                        console.print("[red]Choix invalide. "
+                                    "Veuillez essayer à nouveau.[/red]")
 
     def totalViewCompagny(self, user, company, contacts):
         console = Console()
@@ -301,61 +303,63 @@ class ClientView:
 
     def createcontact(self, company, user):
         if company.user_id == user.id:
-            console = Console()
-            console.rule("Création d'un nouveau contact ")
-            console.print("")
-            console.print("[green] Le nom du contact [/green]")
-            name = str(input('==>'))
-            console.print("[green] L'email du contact [/green]")
-            email = str(input('==>'))
-            console.print("[green] Le numéro de téléphone du contact [/green]")
-            phone = str(input('==>'))
-            console.print("[green] Le contact est il le principal "
-                          "signataire ? (Oui / Non)[/green]")
-            valid_role = ["Oui", "Non"]
-            role = None
-            while role not in valid_role:
-                role = input('==>')
-                if role == "Oui":
-                    signatory = True
-                elif role == "Non":
-                    signatory = False
-                else:
-                    console.print("[red]Choix invalide. Veuillez "
-                                  "essayer à nouveau.[/red]")
-
-            console.rule("Résumé de votre saisie pour confirmation")
-            console.print("")
-            tableconfirmation = Table(box=None)
-            tableconfirmation.add_column("Type", justify="left",
-                                         style="green", no_wrap=True)
-            tableconfirmation.add_column("Vos saisies", justify="left",
-                                         style="white")
-            tableconfirmation.add_row("", "")
-            tableconfirmation.add_row("Nom", f"{name}")
-            tableconfirmation.add_row("Email", f"{email}")
-            tableconfirmation.add_row("Telephone", f"{phone}")
-            tableconfirmation.add_row("Signataire", f"{role}")
-            console.print(tableconfirmation)
-
-            console.print("")
-            console.print("-" * console.width)
-            centered_text = Text("Confirmez vous votre saisie ?",
-                                 style="bold green")
-            console.print(Align.center(centered_text))
-
-            console.print("[green] Oui ou Non [/green]")
-            valid_role = ["Oui", "Non"]
-            while True:
-                choix = input('==>')
-                if choix in valid_role:
-                    if choix == "Oui":
-                        return name, email, phone, signatory
+            choix = None
+            while choix != 'Oui':
+                console = Console()
+                console.rule("Création d'un nouveau contact ")
+                console.print("")
+                console.print("[green] Le nom du contact [/green]")
+                name = str(input('==>'))
+                console.print("[green] L'email du contact [/green]")
+                email = str(input('==>'))
+                console.print("[green] Le numéro de téléphone du contact [/green]")
+                phone = str(input('==>'))
+                console.print("[green] Le contact est il le principal "
+                            "signataire ? (Oui / Non)[/green]")
+                valid_role = ["Oui", "Non"]
+                role = None
+                while role not in valid_role:
+                    role = input('==>')
+                    if role == "Oui":
+                        signatory = True
+                    elif role == "Non":
+                        signatory = False
                     else:
-                        break
-                else:
-                    console.print("[red]Choix invalide. Veuillez "
-                                  "essayer à nouveau.[/red]")
+                        console.print("[red]Choix invalide. Veuillez "
+                                    "essayer à nouveau.[/red]")
+
+                console.rule("Résumé de votre saisie pour confirmation")
+                console.print("")
+                tableconfirmation = Table(box=None)
+                tableconfirmation.add_column("Type", justify="left",
+                                            style="green", no_wrap=True)
+                tableconfirmation.add_column("Vos saisies", justify="left",
+                                            style="white")
+                tableconfirmation.add_row("", "")
+                tableconfirmation.add_row("Nom", f"{name}")
+                tableconfirmation.add_row("Email", f"{email}")
+                tableconfirmation.add_row("Telephone", f"{phone}")
+                tableconfirmation.add_row("Signataire", f"{role}")
+                console.print(tableconfirmation)
+
+                console.print("")
+                console.print("-" * console.width)
+                centered_text = Text("Confirmez vous votre saisie ?",
+                                    style="bold green")
+                console.print(Align.center(centered_text))
+
+                console.print("[green] Oui ou Non [/green]")
+                valid_role = ["Oui", "Non"]
+                while True:
+                    choix = input('==>')
+                    if choix in valid_role:
+                        if choix == "Oui":
+                            return name, email, phone, signatory
+                        else:
+                            break
+                    else:
+                        console.print("[red]Choix invalide. Veuillez "
+                                    "essayer à nouveau.[/red]")
 
     def detailedContact(self, contact, company):
         console = Console()

@@ -295,7 +295,7 @@ class UserDAO:
         finally:
             session.close()
 
-    def get_user_by_user_id(self, user_id: int):
+    def get_company_by_user_id(self, user_id: int):
         session = self.Session()
         try:
             companys = session.query(Company).filter(
@@ -576,7 +576,7 @@ class UserDAO:
         session = self.Session()
         try:
             contracts = session.query(Contract).filter(
-                Contract.user_id == user_id, Contract.sign is True).all()
+                Contract.user_id == user_id, Contract.sign == 1).all()
             return contracts
         except Exception as e:
             print(f"Error: {e}")
@@ -671,12 +671,42 @@ class UserDAO:
         finally:
             session.close()
 
+    def get_event_contract(self, event_id: int, contract_id: str):
+        session = self.Session()
+        try:
+            event = session.query(Event).filter(
+                Event.id == event_id
+            ).one_or_none()
+
+            contract = session.query(Contract).filter(
+                Contract.id == contract_id
+            ).one_or_none()
+
+            if event and contract:
+                if contract in event.contracts:
+                    return event, contract
+                else:
+                    print(f"Contract with ID {contract_id} is not linked to Event with ID {event_id}.")
+                    return None, None
+            else:
+                if not event:
+                    print(f"Event with ID {event_id} not found.")
+                if not contract:
+                    print(f"Contract with ID {contract_id} not found.")
+                return None, None
+        except Exception as e:
+            print(f"Error: {e}")
+            return None, None
+        finally:
+            session.close()
+
+
     def modify_event_contract(self, event_id: int,
                               old_contract_id: str,
                               new_contract_id: str):
         session = self.Session()
         try:
-            # Rechercher l'événement et les contrats
+
             event = session.query(Event).filter(
                 Event.id == event_id
                 ).one_or_none()
@@ -688,7 +718,7 @@ class UserDAO:
                 ).one_or_none()
 
             if event and old_contract and new_contract:
-                # Remplacer l'ancien contrat par le nouveau
+
                 if old_contract in event.contracts:
                     event.contracts.remove(old_contract)
                     event.contracts.append(new_contract)
@@ -711,7 +741,7 @@ class UserDAO:
     def delete_event_contract(self, event_id: int, contract_id: str):
         session = self.Session()
         try:
-            # Rechercher l'événement et le contrat
+
             event = session.query(Event).filter(
                 Event.id == event_id
                 ).one_or_none()
@@ -720,7 +750,7 @@ class UserDAO:
                 ).one_or_none()
 
             if event and contract:
-                # Supprimer l'association
+
                 if contract in event.contracts:
                     event.contracts.remove(contract)
                     session.commit()

@@ -150,80 +150,82 @@ class ContractView:
 
     def createcontract(self, user, company):
         if company.user_id == user.id:
-            console = Console()
-            pattern = re.compile(r"^\d+(.\d{1,2})?$")
-            console.rule("Création d'un nouveau contrat ")
-            console.print("")
+            choix = None
+            while choix != 'Oui':
+                console = Console()
+                pattern = re.compile(r"^\d+(.\d{1,2})?$")
+                console.rule("Création d'un nouveau contrat ")
+                console.print("")
 
-            while True:
-                console.print("[green] Montant total du"
-                              " contrat (Sans le €) [/green]")
-                total_amont = input('==>')
-                if pattern.match(total_amont):
-                    break
-                else:
-                    console.print("[red]Entrée invalide. Veuillez "
-                                  "entrer uniquement des chiffres "
-                                  "et un point.[/red]")
-
-            while True:
-                console.print("[green] Montant actuellement"
-                              " payé (Sans le €) [/green]")
-                current_amont = input('==>')
-                if pattern.match(current_amont):
-                    break
-                else:
-                    console.print("[red]Entrée invalide. "
-                                  "Veuillez entrer uniquement des chiffres "
-                                  "et un point.[/red]")
-
-            console.print("[green] Le contrat est il"
-                          " signé ? (Oui / Non)[/green]")
-            valid_role = ["Oui", "Non"]
-            role = None
-            while role not in valid_role:
-                role = input('==>')
-                if role == "Oui":
-                    sign = True
-                elif role == "Non":
-                    sign = False
-                else:
-                    console.print("[red]Choix invalide. "
-                                  "Veuillez essayer à nouveau.[/red]")
-
-            console.rule("Résumé de votre saisie pour confirmation")
-            console.print("")
-            tableconfirmation = Table(box=None)
-            tableconfirmation.add_column("Type", justify="left",
-                                         style="green", no_wrap=True)
-            tableconfirmation.add_column("Vos saisies",
-                                         justify="left", style="white")
-            tableconfirmation.add_row("", "")
-            tableconfirmation.add_row("Entreprise", f"{company.company_name}")
-            tableconfirmation.add_row("Gestionnaire", "Vous")
-            tableconfirmation.add_row("Montant total", f"{total_amont}")
-            tableconfirmation.add_row("Montant actuel", f"{current_amont}")
-            tableconfirmation.add_row("Contrat Signé", f"{role}")
-            console.print(tableconfirmation)
-
-            console.print("")
-            console.print("-" * console.width)
-            centered_text = Text("Confirmez vous votre saisie ?",
-                                 style="bold green")
-            console.print(Align.center(centered_text))
-
-            console.print("[green] Oui ou Non [/green]")
-            valid_role = ["Oui", "Non"]
-            while True:
-                choix = input('==>')
-                if choix in valid_role:
-                    if choix == "Oui":
-                        return total_amont, current_amont, sign
-                    else:
+                while True:
+                    console.print("[green] Montant total du"
+                                " contrat (Sans le €) [/green]")
+                    total_amont = input('==>')
+                    if pattern.match(total_amont):
                         break
-                else:
-                    console.print("[red]Choix invalide. "
-                                  "Veuillez essayer à nouveau.[/red]")
+                    else:
+                        console.print("[red]Entrée invalide. Veuillez "
+                                    "entrer uniquement des chiffres "
+                                    "et un point.[/red]")
+
+                while True:
+                    console.print("[green] Montant actuellement"
+                                " payé (Sans le €) [/green]")
+                    current_amont = input('==>')
+                    if pattern.match(current_amont):
+                        break
+                    else:
+                        console.print("[red]Entrée invalide. "
+                                    "Veuillez entrer uniquement des chiffres "
+                                    "et un point.[/red]")
+
+                console.print("[green] Le contrat est il"
+                            " signé ? (Oui / Non)[/green]")
+                valid_role = ["Oui", "Non"]
+                role = None
+                while role not in valid_role:
+                    role = input('==>')
+                    if role == "Oui":
+                        sign = True
+                    elif role == "Non":
+                        sign = False
+                    else:
+                        console.print("[red]Choix invalide. "
+                                    "Veuillez essayer à nouveau.[/red]")
+
+                console.rule("Résumé de votre saisie pour confirmation")
+                console.print("")
+                tableconfirmation = Table(box=None)
+                tableconfirmation.add_column("Type", justify="left",
+                                            style="green", no_wrap=True)
+                tableconfirmation.add_column("Vos saisies",
+                                            justify="left", style="white")
+                tableconfirmation.add_row("", "")
+                tableconfirmation.add_row("Entreprise", f"{company.company_name}")
+                tableconfirmation.add_row("Gestionnaire", "Vous")
+                tableconfirmation.add_row("Montant total", f"{total_amont}")
+                tableconfirmation.add_row("Montant actuel", f"{current_amont}")
+                tableconfirmation.add_row("Contrat Signé", f"{role}")
+                console.print(tableconfirmation)
+
+                console.print("")
+                console.print("-" * console.width)
+                centered_text = Text("Confirmez vous votre saisie ?",
+                                    style="bold green")
+                console.print(Align.center(centered_text))
+
+                console.print("[green] Oui ou Non [/green]")
+                valid_role = ["Oui", "Non"]
+                while True:
+                    choix = input('==>')
+                    if choix in valid_role:
+                        if choix == "Oui":
+                            return total_amont, current_amont, sign
+                        else:
+                            break
+                    else:
+                        console.print("[red]Choix invalide. "
+                                    "Veuillez essayer à nouveau.[/red]")
 
     def contractview(sel, user, company, contrat, events, userDAO):
 
@@ -384,98 +386,100 @@ class ContractView:
 
     def createevent(self, company, user, supports):
         if company.user_id == user.id:
-            console = Console()
-            pattern = re.compile(r"^\d{2}/\d{2}/\d{4} \d{2}:\d{2}$")
-            console.rule("Création d'un nouvel évènement")
-            console.print("")
+            choix = None
+            while choix != 'Oui':
+                console = Console()
+                pattern = re.compile(r"^\d{2}/\d{2}/\d{4} \d{2}:\d{2}$")
+                console.rule("Création d'un nouvel évènement")
+                console.print("")
 
-            while True:
-                console.print("[green] Date et heure de début de l'évènement "
-                              "(format : JJ/MM/AAAA HH:MM) : [/green]")
-                event_start = input('==>')
-                if pattern.match(event_start):
-                    event_date_start = datetime.strptime(event_start,
-                                                         "%d/%m/%Y %H:%M")
-                    break
-                else:
-                    console.print("[red]Entrée invalide. Veuillez entrer "
-                                  "uniquement des chiffres et un point.[/red]")
-
-            while True:
-                console.print("[green] Date et heure de fin de l'évènement "
-                              "(format : JJ/MM/AAAA HH:MM) : [/green]")
-                event_end = input('==>')
-                if pattern.match(event_end):
-                    event_date_end = datetime.strptime(event_end,
-                                                       "%d/%m/%Y %H:%M")
-                    break
-                else:
-                    console.print("[red]Entrée invalide. Veuillez entrer "
-                                  "uniquement des chiffres et un point.[/red]")
-
-            console.print("[green] Lieu de l'évènement : [/green]")
-            location = input('==>')
-
-            console.print("[green] Nombre de personnes : [/green]")
-            attendees = input('==>')
-
-            console.print("[green] Notes : [/green]")
-            notes = input('==>')
-
-            console.print("[green] Liste des supports disponibles : [/green]")
-            valid_role = []
-            for element in supports:
-                valid_role.append(element.id)
-                console.print(f"[green]{element.id}[/green]     {element.nom}")
-            console.print("")
-            console.print("[green] Id du support chargé "
-                          "de l'évènement [/green]")
-            role = None
-            print(valid_role)
-            while role not in valid_role:
-                role = int(input('==>'))
-                if role in valid_role:
-                    support_id = role
-                else:
-                    console.print("[red]Choix invalide. Veuillez "
-                                  "essayer à nouveau.[/red]")
-
-            console.rule("Résumé de votre saisie pour confirmation")
-            console.print("")
-            tableconfirmation = Table(box=None)
-            tableconfirmation.add_column("Type", justify="left", style="green",
-                                         no_wrap=True)
-            tableconfirmation.add_column("Vos saisies", justify="left",
-                                         style="white")
-            tableconfirmation.add_row("", "")
-            tableconfirmation.add_row("Entreprise", f"{company.company_name}")
-            tableconfirmation.add_row("Gestionnaire", "xxxxxxxxxxxxxxxxx")
-            tableconfirmation.add_row("Date et heure de début de l'évènement",
-                                      f"{event_date_start.strftime(
-                                          '%Y-%m-%d %H:%M:%S')}")
-            tableconfirmation.add_row("Date et heure de fin de l'évènement",
-                                      f"{event_date_end.strftime(
-                                          '%Y-%m-%d %H:%M:%S')}")
-            tableconfirmation.add_row("Lieu de l'évènement", f"{location}")
-            tableconfirmation.add_row("Nombre de personnes", f"{attendees}")
-            tableconfirmation.add_row("Notes", f"{notes}")
-            console.print(tableconfirmation)
-
-            console.print("")
-            console.print("-" * console.width)
-            centered_text = Text("Confirmez vous votre saisie ?",
-                                 style="bold green")
-            console.print(Align.center(centered_text))
-
-            console.print("[green] Oui ou Non [/green]")
-            valid_role = ["Oui", "Non"]
-            while True:
-                choix = input('==>')
-                if choix in valid_role:
-                    if choix == "Oui":
-                        return event_date_start, event_date_end, location, support_id, attendees, notes
-                    else:
+                while True:
+                    console.print("[green] Date et heure de début de l'évènement "
+                                "(format : JJ/MM/AAAA HH:MM) : [/green]")
+                    event_start = input('==>')
+                    if pattern.match(event_start):
+                        event_date_start = datetime.strptime(event_start,
+                                                            "%d/%m/%Y %H:%M")
                         break
-                else:
-                    console.print("[red]Choix invalide. Veuillez"
-                                  " essayer à nouveau.[/red]")
+                    else:
+                        console.print("[red]Entrée invalide. Veuillez entrer "
+                                    "uniquement des chiffres et un point.[/red]")
+
+                while True:
+                    console.print("[green] Date et heure de fin de l'évènement "
+                                "(format : JJ/MM/AAAA HH:MM) : [/green]")
+                    event_end = input('==>')
+                    if pattern.match(event_end):
+                        event_date_end = datetime.strptime(event_end,
+                                                        "%d/%m/%Y %H:%M")
+                        break
+                    else:
+                        console.print("[red]Entrée invalide. Veuillez entrer "
+                                    "uniquement des chiffres et un point.[/red]")
+
+                console.print("[green] Lieu de l'évènement : [/green]")
+                location = input('==>')
+
+                console.print("[green] Nombre de personnes : [/green]")
+                attendees = input('==>')
+
+                console.print("[green] Notes : [/green]")
+                notes = input('==>')
+
+                console.print("[green] Liste des supports disponibles : [/green]")
+                valid_role = []
+                for element in supports:
+                    valid_role.append(element.id)
+                    console.print(f"[green]{element.id}[/green]     {element.nom}")
+                console.print("")
+                console.print("[green] Id du support chargé "
+                            "de l'évènement [/green]")
+                role = None
+                print(valid_role)
+                while role not in valid_role:
+                    role = int(input('==>'))
+                    if role in valid_role:
+                        support_id = role
+                    else:
+                        console.print("[red]Choix invalide. Veuillez "
+                                    "essayer à nouveau.[/red]")
+
+                console.rule("Résumé de votre saisie pour confirmation")
+                console.print("")
+                tableconfirmation = Table(box=None)
+                tableconfirmation.add_column("Type", justify="left", style="green",
+                                            no_wrap=True)
+                tableconfirmation.add_column("Vos saisies", justify="left",
+                                            style="white")
+                tableconfirmation.add_row("", "")
+                tableconfirmation.add_row("Entreprise", f"{company.company_name}")
+                tableconfirmation.add_row("Gestionnaire", "xxxxxxxxxxxxxxxxx")
+                tableconfirmation.add_row("Date et heure de début de l'évènement",
+                                        f"{event_date_start.strftime(
+                                            '%Y-%m-%d %H:%M:%S')}")
+                tableconfirmation.add_row("Date et heure de fin de l'évènement",
+                                        f"{event_date_end.strftime(
+                                            '%Y-%m-%d %H:%M:%S')}")
+                tableconfirmation.add_row("Lieu de l'évènement", f"{location}")
+                tableconfirmation.add_row("Nombre de personnes", f"{attendees}")
+                tableconfirmation.add_row("Notes", f"{notes}")
+                console.print(tableconfirmation)
+
+                console.print("")
+                console.print("-" * console.width)
+                centered_text = Text("Confirmez vous votre saisie ?",
+                                    style="bold green")
+                console.print(Align.center(centered_text))
+
+                console.print("[green] Oui ou Non [/green]")
+                valid_role = ["Oui", "Non"]
+                while True:
+                    choix = input('==>')
+                    if choix in valid_role:
+                        if choix == "Oui":
+                            return event_date_start, event_date_end, location, support_id, attendees, notes
+                        else:
+                            break
+                    else:
+                        console.print("[red]Choix invalide. Veuillez"
+                                    " essayer à nouveau.[/red]")
