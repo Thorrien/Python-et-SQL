@@ -154,28 +154,6 @@ class UserDAO:
         finally:
             session.close()
 
-    def add_role(self, role: str):
-        session = self.Session()
-        try:
-            new_role = Role(role=role)
-            session.add(new_role)
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            print(f"Error: {e}")
-        finally:
-            session.close()
-
-    def get_role(self, role_id: int):
-        session = self.Session()
-        try:
-            role = session.query(Role).filter(Role.id == role_id).one_or_none()
-            return role
-        except Exception as e:
-            print(f"Error: {e}")
-        finally:
-            session.close()
-
     def get_all_roles(self):
         session = self.Session()
         try:
@@ -186,33 +164,6 @@ class UserDAO:
         finally:
             session.close()
 
-    def update_role(self, role_id: int, role: str):
-        session = self.Session()
-        try:
-            role_obj = session.query(Role).filter(
-                Role.id == role_id
-                ).one_or_none()
-            if role_obj:
-                role_obj.role = role
-                session.commit()
-        except Exception as e:
-            session.rollback()
-            print(f"Error: {e}")
-        finally:
-            session.close()
-
-    def delete_role(self, role_id: int):
-        session = self.Session()
-        try:
-            role = session.query(Role).filter(Role.id == role_id).one_or_none()
-            if role:
-                session.delete(role)
-                session.commit()
-        except Exception as e:
-            session.rollback()
-            print(f"Error: {e}")
-        finally:
-            session.close()
 
     def add_company(self, name: str, user_id: int, address: str):
         session = self.Session()

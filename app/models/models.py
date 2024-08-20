@@ -92,7 +92,7 @@ class Company(Base):
     contracts = relationship("Contract", back_populates="company")
 
     def __repr__(self):
-        return (f"<{self.id}, {self.company_name}, {self.update_date})>")
+        return (f"<{self.id}, {self.company_name})>")
 
 
 class Event(Base):

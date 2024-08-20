@@ -76,6 +76,8 @@ def test_multiple_get_user(dao):
     assert any(user.email == MAIL for user in users)
     users2 = dao.get_all_users()
     assert any(user.email == MAIL for user in users2)
+    users3 = dao.get_all_user_with_role_name()
+    assert MAIL not in users3
     session.close()
 
 def test_update_user(dao):
@@ -117,6 +119,8 @@ def test_multiple_get_company(dao):
     assert any(company.address == COMPANY_ADRESS for company in companys2)
     company3 = dao.get_company(company_id)
     assert company3.company_name == COMPANY_NAME
+    companys4 = dao.get_all_company_without_user()
+    assert any(company.address != COMPANY_ADRESS for company in companys4)
     session.close()
 
 def test_update_company(dao):
@@ -148,6 +152,8 @@ def test_multiple_get_event(dao):
     assert any(event.location == LOCATION for event in events)
     events2 = dao.get_all_events()
     assert any(event.location == LOCATION for event in events2)
+    events3  = dao.get_all_events_without_user()
+    assert any(event.location != LOCATION for event in events3)
     session.close()
 
 def test_update_event(dao):
@@ -236,6 +242,10 @@ def test_multiple_get_contract(dao):
     assert any(contract.total_amont == CONTRACT_TOTAL_AMONT for contract in contracts3)
     contracts4 = dao.get_all_contracts_without_full_paiement(id)
     assert any(contract.total_amont == CONTRACT_TOTAL_AMONT for contract in contracts4)
+    contracts5 = dao.get_all_contracts_by_user_id(id)
+    assert any(contract.total_amont == CONTRACT_TOTAL_AMONT for contract in contracts5)
+    contracts6 = dao.get_all_contracts_without_user()
+    assert any(contract.total_amont != CONTRACT_TOTAL_AMONT for contract in contracts6)
     session.close()
 
 def test_update_contract(dao):
@@ -267,6 +277,15 @@ def test_add_and_multiple_get_event_contract(dao):
     assert any(event.location == LOCATION for event in events2)
     events3 = dao.get_company_events(company_id)
     assert any(event.location == LOCATION for event in events3)
+    dao.modify_event_contract(event_id, contract_id, contract_id)
+    contracts5 = dao.get_contract_for_event(event_id)
+    assert any(contract.total_amont == CONTRACT_TOTAL_AMONT for contract in contracts5)
+    session.close()
+
+def test_get_text(dao):
+    session = dao.Session()
+    text = dao.get_text(1)
+    assert text is not None
     session.close()
 
 
