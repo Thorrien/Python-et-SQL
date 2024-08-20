@@ -4,7 +4,7 @@ from app.view.userviews import UserView
 from app.view.clientview import ClientView
 from app.view.contractview import ContractView
 from app.view.eventview import EventView
-
+import sentry_sdk
 
 class Controler:
 
@@ -328,6 +328,15 @@ class Controler:
         sign_flag = 1 if sign else 0
         self.userDAO.add_contract(company.id, self.user.id, total_amont,
                                   current_amont, sign_flag)
+        if sign_flag == 1: 
+            with sentry_sdk.configure_scope() as scope:
+                scope.set_tag("action", "creation")
+                scope.set_tag("action", "signature")
+                scope.set_tag("company :", company.id)
+                scope.set_tag("commercial :", self.user.id)
+            sentry_sdk.capture_message("Collaborateur a signé un contrat :"
+                                       f"Commercial={self.user.nom}, id de "
+                                       f"l'entreprise: {company.id}")
 
     def view_contract(self, choix, contrats, supports):
         id = int(choix[1:])
@@ -463,6 +472,14 @@ class Controler:
             self.userDAO.update_contract(contrat.id, company.id, self.user.id,
                                          contrat.total_amont,
                                          contrat.current_amont, sign)
+            with sentry_sdk.configure_scope() as scope:
+                scope.set_tag("action", "update")
+                scope.set_tag("company :", company.id)
+                scope.set_tag("action", "signature")
+                scope.set_tag("commercial :", self.user.id)
+            sentry_sdk.capture_message("Collaborateur à signé un contrat "
+                                       f": Commercial={self.user.nom}, id "
+                                       f"de l'entreprise: {company.id}")
         else:
             self.view.notautorized(self.user)
 

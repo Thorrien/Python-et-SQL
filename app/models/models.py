@@ -41,7 +41,7 @@ class User(Base):
     email = Column(String(255), nullable=False, unique=True)
     mot_de_passe = Column(String(255), nullable=False)
     role_id = Column(Integer, ForeignKey('role.id'), nullable=False)
-    date_creation = Column(DateTime, default=datetime.utcnow)
+    date_creation = Column(TIMESTAMP, server_default=func.now(), nullable=True)
 
     role = relationship("Role", back_populates="users")
     companies = relationship("Company", back_populates="user")

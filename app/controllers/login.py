@@ -2,7 +2,7 @@ from app.view.views import View
 from app.view.loginview import Loginview
 from app.dao.userdao import UserDAO
 from app.controllers.control import Controler
-
+import sentry_sdk
 
 class Login:
 
@@ -18,9 +18,14 @@ class Login:
 
         if user:
             if user.verify_password(password):
+                with sentry_sdk.configure_scope() as scope:
+                    scope.set_tag("action", "connexion")
+                    scope.set_tag("collaborator_name", email)
+                sentry_sdk.capture_message(f"Collaborateur connecté : Nom={user.nom}, Email={email}")
                 self.loginview.logtrue()
                 controler = Controler(user, self.userdao)
                 controler.run()
+
             else:
                 self.loginview.logfalse()
                 exit()

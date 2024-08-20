@@ -3,7 +3,7 @@ from sqlalchemy import create_engine, MetaData, inspect
 from app.models.models import User, event_contract, Base, Role
 from app.models.models import Company, Event, Contact, Contract, Text
 from app.utils import config
-
+import sentry_sdk
 
 class UserDAO:
     def __init__(self):
@@ -107,6 +107,10 @@ class UserDAO:
             new_user.set_password(password)
             session.add(new_user)
             session.commit()
+            with sentry_sdk.configure_scope() as scope:
+                scope.set_tag("action", "create")
+                scope.set_tag("collaborator_name", name)
+            sentry_sdk.capture_message(f"Collaborateur Créé : Nom={name}, Email={email}")
         except Exception as e:
             session.rollback()
             print(f"Error: {e}")
@@ -135,6 +139,10 @@ class UserDAO:
                 user.email = email
                 user.role_id = role_id
                 session.commit()
+                with sentry_sdk.configure_scope() as scope:
+                    scope.set_tag("action", "update")
+                    scope.set_tag("collaborator_name", name)
+                sentry_sdk.capture_message(f"Collaborateur modifié : Nom={user.nom}, Email={user.email}")
         except Exception as e:
             session.rollback()
             print(f"Error: {e}")
@@ -148,6 +156,11 @@ class UserDAO:
             if user:
                 session.delete(user)
                 session.commit()
+                with sentry_sdk.configure_scope() as scope:
+                    scope.set_tag("action", "delete")
+                    scope.set_tag("collaborator_name", user.nom)
+                sentry_sdk.capture_message(f"Collaborateur supprimé : Nom={user.nom}, Email={user.email}")
+
         except Exception as e:
             session.rollback()
             print(f"Error: {e}")
