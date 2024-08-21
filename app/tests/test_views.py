@@ -8,10 +8,14 @@ from app.controllers.security import validate_email
 from app.view.eventview import EventView
 from app.view.contractview import ContractView
 from app.view.clientview import ClientView
+from rich.console import Console
+from rich.live import Live
+from rich.text import Text
 
 @pytest.fixture
 def mock_user():
     user = Mock()
+    user.id = 1
     user.email = "eric@gmail.com"
     user.nom = "Eric BARILLER"
     user.authorisation.return_value = True  
@@ -501,5 +505,62 @@ def test_LiteViewCompagny(capfd, mock_user, mock_company, mock_contacts):
 
     assert "Adresse de l'entreprise" in element.out 
     assert "Récapitulatif de l'entreprise Total" in element.out 
+        
+def test_create_contract(monkeypatch, mock_user, mock_company):
+    contractview = ContractView()
+    inputs = iter([
+        "1000.00",
+        "500.00",
+        "Oui",
+        "Oui"
+    ])
+    
+    with patch('builtins.input', side_effect=lambda _: next(inputs)):
+        result = contractview.createcontract(mock_user, mock_company)
+        
+    assert result is not None, "La fonction createcontract a retourné None"
+    
+    total_amont, current_amont, sign = result
 
+    assert total_amont == "1000.00"
+    assert current_amont == "500.00"
+    assert sign is True
+    
+def test_create_event(mock_user, mock_company, mock_users):
+    contractview = ContractView()
 
+    inputs = iter([
+        "19/08/2024 10:00",
+        "19/08/2024 12:00",
+        "Paris",
+        "50",
+        "Important meeting",
+        "1",
+        "Oui"
+    ])
+
+    with patch('builtins.input', side_effect=lambda _: next(inputs)):
+        result = contractview.createevent(mock_company, mock_user, mock_users)
+
+    assert result is not None, "La fonction createevent a retourné None"
+
+    event_date_start, event_date_end, location, support_id, attendees, notes = result
+
+    assert event_date_start == datetime.datetime(2024, 8, 19, 10, 0)
+    assert event_date_end == datetime.datetime(2024, 8, 19, 12, 0)
+    assert location == "Paris"
+    assert support_id == 1
+    assert attendees == "50"
+    assert notes == "Important meeting"
+
+def test_logtrue(capfd):
+    loginview = Loginview()
+    loginview.logtrue()
+    out, err = capfd.readouterr()
+    assert "s" in out
+
+def test_logfalse(capfd):
+    loginview = Loginview()
+    loginview.logfalse()
+    out, err = capfd.readouterr()
+    assert "l" in out

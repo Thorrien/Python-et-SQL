@@ -2,3 +2,4 @@ env/
 notes.txt
 htmlcov/
 cle.py
+utils\config.py

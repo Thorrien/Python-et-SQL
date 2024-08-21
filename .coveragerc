@@ -1,2 +1,2 @@
 [run]
-omit = app/tests/*, main.py, */__init__.py
+omit = app/tests/*, main.py, */__init__.py, cle.py

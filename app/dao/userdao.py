@@ -116,7 +116,7 @@ class UserDAO:
             print(f"Error: {e}")
         finally:
             session.close()
-
+        
     def update_pasword_user(self, user_id: int, password: str):
         session = self.Session()
         try:

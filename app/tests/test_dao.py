@@ -104,8 +104,7 @@ def test_get_all_roles(dao):
 def test_create_company(dao):
     session = dao.Session()
     user = dao.get_user_by_email(MAIL)
-    id = user.id
-    dao.add_company(COMPANY_NAME, id, COMPANY_ADRESS)
+    dao.add_company(COMPANY_NAME, user.id, COMPANY_ADRESS)
     session.commit()
 
 def test_multiple_get_company(dao):
@@ -202,7 +201,6 @@ def test_update_contact(dao):
     id = user.id
     companys = dao.get_company_by_user_id(id)
     company_id = next((company.id for company in companys if company.company_name == COMPANY_NAME), None)
-    dao.add_contact(company_id, CONTACT_NAME, CONTACT_EMAIL, CONTACT_PHONE, CONTACT_SIGNATORY)
     contacts = dao.get_all_contact_by_company_id(company_id)
     contact_id = next((contact.id for contact in contacts if contact.name == CONTACT_NAME), None)
     dao.update_contact(contact_id, company_id, CONTACT_NAME, CONTACT_EMAIL, '12345678454', CONTACT_SIGNATORY)
@@ -306,6 +304,17 @@ def test_delete_event_contract(dao):
     assert deleted_contract is None
     session.close()
 
+def test_delete_event(dao):
+    session = dao.Session()
+    user = dao.get_user_by_email(MAIL)
+    id = user.id
+    events = dao.get_all_events_by_user_id(id)
+    event_id = next((event.id for event in events if event.location == LOCATION), None)
+    dao.delete_event(event_id)
+    deleted_event = dao.get_event(event_id)
+    assert deleted_event is None
+    session.close()
+    
 def test_delete_contract(dao):
     session = dao.Session()
     user = dao.get_user_by_email(MAIL)
@@ -320,10 +329,8 @@ def test_delete_contract(dao):
 def test_delete_contact(dao):
     session = dao.Session()
     user = dao.get_user_by_email(MAIL)
-    id = user.id
-    companys2 = dao.get_company_by_user_id(id)
-    company_id = next((company.id for company in companys2 if company.address == COMPANY_ADRESS), None)
-    dao.add_contact(company_id, CONTACT_NAME, CONTACT_EMAIL, CONTACT_PHONE, CONTACT_SIGNATORY)
+    companys2 = dao.get_company_by_user_id(user.id)
+    company_id = next((company.id for company in companys2 if company.company_name == COMPANY_NAME), None)
     contacts = dao.get_all_contact_by_company_id(company_id)
     contact_id = next((contact.id for contact in contacts if contact.name == CONTACT_NAME), None)
     dao.delete_contact(contact_id)
@@ -331,22 +338,15 @@ def test_delete_contact(dao):
     assert deleted_contact is None
     session.close()
 
-def test_delete_event(dao):
-    session = dao.Session()
-    events = dao.get_all_events_by_user_id(id)
-    event_id = next((event.id for event in events if event.location == LOCATION), None)
-    dao.delete_event(event_id)
-    deleted_event = dao.get_event(event_id)
-    assert deleted_event is None, "test passé avec succès"
-    session.close()
-
 def test_delete_company(dao):
     session = dao.Session()
+    user = dao.get_user_by_email(MAIL)
+    id = user.id
     companys = dao.get_company_by_user_id(id)
-    company_id = next((company.id for company in companys if company.address == COMPANY_ADRESS), None)
+    company_id = next((company.id for company in companys if company.company_name == COMPANY_NAME), None)
     dao.delete_company(company_id)
     deleted_company = dao.get_company(company_id)
-    assert deleted_company is None, "test passé avec succès"
+    assert deleted_company is None
     session.close()
 
 def test_delete_user(dao):
@@ -355,5 +355,5 @@ def test_delete_user(dao):
     id = user.id
     dao.delete_user(id)
     deleted_user = dao.get_user(id)
-    assert deleted_user is None, "test passé avec succès"
+    assert deleted_user is None
     session.close()
