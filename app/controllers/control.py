@@ -23,6 +23,10 @@ class Controler:
         self.gestboucle()
 
     def gestboucle(self):
+        """
+        Gère le menu principal et les choix de 
+        l'utilisateur pour la redirection adaptée.
+        """
         choix = None
         while choix != "QUIT":
             choix = self.view.menuprincipalgestion(self.user)
@@ -48,6 +52,10 @@ class Controler:
                         self.view.notautorized(self.user)
 
     def boucleAttributions(self):
+        """
+        Gère la partie de l'appli réservé aux gestionnaire
+        Elle permet l'attribution des dossiers et des clients.
+        """
         choix = None
         while choix not in ['RET', 'QUIT']:
             companys = self.userDAO.get_all_company_without_user()
@@ -77,6 +85,11 @@ class Controler:
                 return 'LIST'
 
     def boucleUser(self):
+        """
+        Gère la partie de l'appli réservé aux gestionnaire et admins
+        Elle permet la gestion des users.
+        
+        """
         if (
             self.user.authorisation('Admin') or
             self.user.authorisation('Gestion')
@@ -90,6 +103,10 @@ class Controler:
             self.view.notautorized(self.user)
 
     def main_choice(self, choix):
+        """
+        Gère la partie le choix de l'utilisateur pour 
+        proposer la bonne redirection
+        """
         match choix:
             case 'CR':
                 self.create_user()
@@ -106,6 +123,10 @@ class Controler:
                 quit()
 
     def create_user(self):
+        """
+        Récupère les données de la view pour la création d'un user
+        Puis fait appel a la fonction add dédiée du DAO
+        """
         nom, email, mot_de_passe, role = self.userview.createuserview()
         self.userDAO.add_user(nom, email, mot_de_passe, int(role))
 
@@ -144,6 +165,11 @@ class Controler:
                     print("commande inconnue")
 
     def boucleClient(self):
+        """
+        Boucle secondaire
+        Elle permet la gestion des clients.
+        
+        """
         if (
             self.user.authorisation('Admin') or
             self.user.authorisation('Gestion') or
@@ -159,6 +185,10 @@ class Controler:
             self.view.notautorized(self.user)
 
     def client_main_choice(self, choix):
+        """
+        Gère la partie le choix de l'utilisateur pour 
+        proposer la bonne redirection
+        """
         match choix:
             case 'CR':
                 self.create_company()
@@ -178,6 +208,10 @@ class Controler:
                 quit()
 
     def create_company(self):
+        """
+        Récupère les données de la view pour la création d'une entreprise
+        Puis fait appel a la fonction add dédiée du DAO
+        """
         compagny_name, adress = self.clientview.createcompany(self.user)
         self.userDAO.add_company(compagny_name, self.user.id, adress)
 
@@ -191,6 +225,10 @@ class Controler:
             self.process_company_modification_choice(choix, company, contacts)
 
     def process_company_modification_choice(self, choix, company, contacts):
+        """
+        Gère la partie le choix de l'utilisateur pour 
+        proposer la bonne redirection
+        """
         match choix:
             case 'CR':
                 self.create_contact(company)
@@ -213,6 +251,10 @@ class Controler:
                 print("commande inconnue")
 
     def create_contact(self, company):
+        """
+        Récupère les données de la view pour la création d'un contact
+        Puis fait appel a la fonction add dédiée du DAO
+        """
         if self.user.authorisation('Sale') and self.user.id == company.user_id:
             name, email, phone, signatory = self.clientview.createcontact(
                 company,
@@ -256,6 +298,10 @@ class Controler:
             self.process_contact_modification_choice(choix, contact, company)
 
     def process_contact_modification_choice(self, choix, contact, company):
+        """
+        Gère la partie le choix de l'utilisateur pour 
+        proposer la bonne redirection
+        """
         new_data = choix[3:]
         print(new_data)
 
@@ -288,6 +334,11 @@ class Controler:
                 print("commande inconnue")
 
     def boucleContracts(self):
+        """
+        Boucle secondaire
+        Elle permet la gestion des contrats.
+        
+        """
         if (
             self.user.authorisation('Admin') or
             self.user.authorisation('Gestion') or
@@ -303,6 +354,10 @@ class Controler:
                 self.handle_main_choice(choix, contrats, supports)
 
     def handle_main_choice(self, choix, contrats, supports):
+        """
+        Gère la partie le choix de l'utilisateur pour 
+        proposer la bonne redirection
+        """
         match choix:
             case _ if choix.startswith("CR"):
                 self.create_contract(choix)
@@ -320,6 +375,10 @@ class Controler:
                 quit()
 
     def create_contract(self, choix):
+        """
+        Récupère les données de la view pour la création d'un contrat
+        Puis fait appel a la fonction add dédiée du DAO
+        """
         id = choix[2:]
         company = self.userDAO.get_company(id)
         total_amont, current_amont, sign = self.contractview.createcontract(
@@ -353,6 +412,10 @@ class Controler:
             self.contract_choice(choix, contrat, company, events, supports)
 
     def contract_choice(self, choix, contrat, company, events, supports):
+        """
+        Gère la partie le choix de l'utilisateur pour 
+        proposer la bonne redirection
+        """
         match choix:
             case _ if choix.startswith("A"):
                 self.view_event(choix)
@@ -391,6 +454,10 @@ class Controler:
             self.event_choice(choix, event)
 
     def event_choice(self, choix, event):
+        """
+        Gère la partie le choix de l'utilisateur pour 
+        proposer la bonne redirection
+        """
         new_data = choix[3:]
         match choix:
             case "SUPPRIMER":
@@ -428,6 +495,10 @@ class Controler:
                                           new_data)
 
     def create_event(self, company, contrat, supports):
+        """
+        Récupère les données de la view pour la création d'un event
+        Puis fait appel a la fonction add dédiée du DAO
+        """
         if self.user.authorisation('Sale') and self.user.id == company.user_id:
             date_start, date_end, location, support_id, attendees, notes = (
                     self.contractview.createevent(company, self.user, supports)
@@ -501,6 +572,11 @@ class Controler:
         self.userDAO.delete_contract(contrat.id)
 
     def boucleEvents(self):
+        """
+        Boucle secondaire
+        Elle permet la gestion des events.
+        
+        """
         if (
             self.user.authorisation('Admin') or
             self.user.authorisation('Gestion') or
@@ -520,6 +596,10 @@ class Controler:
             return self.eventview.TotalEvents(self.user, events)
 
     def handle_events_choice(self, choix, events):
+        """
+        Gère la partie le choix de l'utilisateur pour 
+        proposer la bonne redirection
+        """
         match choix:
             case "TO":
                 self.handle_total_events_choice(events)
@@ -542,6 +622,10 @@ class Controler:
                 return choix
 
     def handle_tt_events_choice(self, events):
+        """
+        Gère la partie le choix de l'utilisateur pour 
+        proposer la bonne redirection
+        """
         choix = None
         while choix not in ['RET', 'QUIT']:
             choix = self.eventview.TotalEvents(self.user, events)
@@ -551,6 +635,11 @@ class Controler:
                 return choix
 
     def boucleSoloEvents(self, choix):
+        """
+        Boucle secondaire
+        Elle permet la gestion des events.
+        
+        """
         id_event = choix[1:]
         choix = None
         while choix not in ['LIST', 'RET', 'QUIT']:

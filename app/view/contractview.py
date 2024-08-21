@@ -12,6 +12,22 @@ class ContractView:
         pass
 
     def logcontracts(self, user, contrats, userDAO):
+        """
+        Affiche la liste des contrats divisée en trois catégories :
+        - Mes contrats : Contrats gérés par l'utilisateur.
+        - Contrats sans commercial : Contrats sans utilisateur attitré.
+        - Autres contrats : Contrats gérés par d'autres utilisateurs.
+
+        Permet à l'utilisateur de choisir une action en fonction de ses autorisations.
+
+        Entrées:
+        - user: L'utilisateur courant.
+        - contrats: Liste des contrats à afficher.
+        - userDAO: Objet permettant de récupérer les informations supplémentaires sur les entreprises et les utilisateurs.
+
+        Retourne:
+        - Le choix de l'utilisateur pour l'action à entreprendre.
+        """
         console = Console()
         console.rule("Contrats")
         console.print("")
@@ -149,6 +165,17 @@ class ContractView:
                               "Veuillez essayer à nouveau.[/red]")
 
     def createcontract(self, user, company):
+        """
+        Permet à un utilisateur autorisé de créer un nouveau contrat pour une entreprise spécifique.
+        Recueille les informations sur le contrat, les confirme, puis les retourne.
+
+        Entrées:
+        - user: L'utilisateur courant.
+        - company: L'entreprise pour laquelle créer un contrat.
+
+        Retourne:
+        - Tuple (total_amont, current_amont, sign): Les données saisies pour le nouveau contrat.
+        """
         if company.user_id == user.id:
             choix = None
             while choix != 'Oui':
@@ -228,7 +255,20 @@ class ContractView:
                                     "Veuillez essayer à nouveau.[/red]")
 
     def contractview(sel, user, company, contrat, events, userDAO):
+       """
+        Affiche les détails d'un contrat spécifique et les événements associés pour une entreprise.
+        Propose un menu d'actions que l'utilisateur peut entreprendre en fonction de ses autorisations.
 
+        Entrées:
+        - user: L'utilisateur courant.
+        - company: L'entreprise associée au contrat.
+        - contrat: Le contrat à afficher.
+        - events: Liste des événements associés au contrat.
+        - userDAO: Objet permettant de récupérer les informations supplémentaires sur les utilisateurs.
+
+        Retourne:
+        - Le choix de l'utilisateur pour l'action à entreprendre.
+        """
         console = Console()
         console.rule(f"Détail complet du contrat {contrat.id}"
                      f" de l'entreprise {company.company_name}")
@@ -385,6 +425,19 @@ class ContractView:
                               "essayer à nouveau.[/red]")
 
     def createevent(self, company, user, supports):
+        """
+        Permet à un utilisateur autorisé de créer un nouvel événement pour une entreprise spécifique.
+        Recueille les informations sur l'événement, les confirme, puis les retourne.
+
+        Entrées:
+        - company: L'entreprise pour laquelle créer un événement.
+        - user: L'utilisateur courant.
+        - supports: Liste des supports disponibles pour l'événement.
+
+        Retourne:
+        - Tuple (event_date_start, event_date_end, location, support_id, attendees, notes): 
+          Les données saisies pour le nouvel événement.
+        """
         if company.user_id == user.id:
             choix = None
             while choix != 'Oui':

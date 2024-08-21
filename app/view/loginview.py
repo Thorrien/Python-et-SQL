@@ -17,6 +17,15 @@ class Loginview:
         pass
 
     def log(self):
+        """
+        Affiche l'interface d'authentification, recueille l'identifiant (email) et le mot de passe de l'utilisateur.
+        Valide l'email avant de retourner les informations de connexion.
+
+        Retourne:
+        - Tuple (username, password): L'identifiant (email) et le mot de passe de l'utilisateur.
+
+        Si l'email n'est pas valide, le programme se termine.
+        """
         console = Console()
         title_text = Text("EpicEvent", style="bold white on green", justify="center")
         title_panel = Panel(Align.center(title_text), style="bold")
@@ -39,6 +48,10 @@ class Loginview:
             exit()
             
     def logtrue(self):
+        """
+        Affiche une animation indiquant que la connexion a été autorisée et que le chargement est en cours.
+        Utilise une animation en temps réel pour centrer et faire défiler le texte sur l'écran.
+        """
         console = Console()
         text = "Connection autorisé - Chargement en cours"
         console_width = console.width
@@ -56,6 +69,10 @@ class Loginview:
                 time.sleep(0.01)
 
     def logfalse(self):
+        """
+        Affiche une animation indiquant que la connexion a été refusée et que le logiciel se ferme.
+        Utilise une animation en temps réel pour centrer et faire défiler le texte sur l'écran.
+        """
         console = Console()
         text = "Connection Refusée - Fermeture du logiciel"
         console_width = console.width

@@ -12,6 +12,11 @@ class Login:
         self.userdao = UserDAO()
 
     def login(self):
+        """
+        Processus de connexion de l'utilisateur en validant l'email et le mot de passe, 
+        en connectant l'utilisateur si les informations sont correctes, 
+        et en capturant l'événement de connexion avec Sentry.
+        """
         self.view.ascii()
         email, password = self.loginview.log()
         user = self.userdao.get_user_by_email(email)

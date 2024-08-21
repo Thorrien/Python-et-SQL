@@ -56,12 +56,19 @@ class View:
         console.print(title_panel)
         current_date = datetime.now().strftime("%d/%m/%Y")
         current_time = datetime.now().strftime("%H:%M:%S")
-        first_line = f"id : 12564{' ' * (console.width - len('id : 12564') - len(current_date))}{current_date}"
+        first_line = f"id : {user.id}{' ' * (console.width - len('id : 12564') - len(current_date))}{current_date}"
         console.print(first_line)
         second_line = f"[bold green]{user.email}[/bold green]{' ' * (console.width - len(user.email) - len(current_time))}{current_time}"
         console.print(second_line)
 
     def logtrue(self, user, text):
+        """
+        Affiche un message de bienvenue à l'utilisateur connecté avec un message de la direction.
+
+        Entrées:
+        - user: L'utilisateur connecté.
+        - text: Le message de la direction à afficher après la connexion réussie.
+        """
         self.title(user)
         console = Console()
         console.rule(f"Bienvenue {user.nom}")

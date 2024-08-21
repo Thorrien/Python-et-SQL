@@ -12,6 +12,17 @@ class UserView:
         pass
 
     def logutilisateurs(self, user, users):
+        """
+        Affiche une liste des utilisateurs, divisée en trois colonnes, et propose un menu d'actions.
+        Permet à l'utilisateur de sélectionner une action en fonction des identifiants des utilisateurs.
+
+        Entrées:
+        - user: L'utilisateur courant.
+        - users: Liste des utilisateurs à afficher.
+
+        Retourne:
+        - Le choix de l'utilisateur pour l'action à entreprendre.
+        """
         console = Console()
         console.rule("Comptes utilisateurs")
         console.print("")
@@ -80,6 +91,16 @@ class UserView:
                               "essayer à nouveau.[/red]")
 
     def soloUserView(self, user, affiche):
+        """
+        Affiche les détails d'un utilisateur spécifique et propose un menu d'actions pour modifier ses informations ou le supprimer.
+
+        Entrées:
+        - user: L'utilisateur courant.
+        - affiche: L'utilisateur dont les détails sont à afficher.
+
+        Retourne:
+        - Le choix de l'utilisateur pour l'action à entreprendre.
+        """
         console = Console()
         console.rule(f"Données de l'utilisateur {affiche.nom} ")
         console.print("")
@@ -139,6 +160,12 @@ class UserView:
                               "à nouveau.[/red]")
 
     def notautorized(self, user):
+        """
+        Affiche un message indiquant que l'utilisateur courant n'a pas les droits pour utiliser une fonctionnalité spécifique.
+
+        Entrées:
+        - user: L'utilisateur courant.
+        """
         console = Console()
         console.rule(f"[red] {user.nom}, vous n'avez pas les droits "
                      "permettant d'utiliser cette fonctionnalité[/red]")
@@ -149,6 +176,13 @@ class UserView:
         console.rule("Fin de la page")
 
     def createuserview(self):
+        """
+        Affiche l'interface de création d'un nouvel utilisateur.
+        Recueille les informations nécessaires, les confirme, puis les retourne.
+
+        Retourne:
+        - Tuple (nom, email, mot_de_passe, role): Les données saisies pour le nouvel utilisateur.
+        """
         choix = None
         while choix != 'Oui':
             console = Console()
@@ -202,6 +236,17 @@ class UserView:
                     break
 
     def logWithoutUser(self, user, events, companys):
+        """
+        Affiche une liste d'événements et d'entreprises non attribués et propose un menu pour les attribuer à des utilisateurs.
+
+        Entrées:
+        - user: L'utilisateur courant.
+        - events: Liste des événements non attribués.
+        - companys: Liste des entreprises non attribuées.
+
+        Retourne:
+        - Le choix de l'utilisateur pour l'action à entreprendre.
+        """
         console = Console()
         console.rule("Détail de tous les éléments non attribués ")
         console.print("")
@@ -270,6 +315,15 @@ class UserView:
                               " essayer à nouveau.[/red]")
 
     def chooseUser(self, users):
+        """
+        Affiche une liste d'utilisateurs correspondants à un critère et propose un menu pour attribuer un événement à l'un d'entre eux.
+
+        Entrées:
+        - users: Liste des utilisateurs parmi lesquels choisir.
+
+        Retourne:
+        - L'ID de l'utilisateur choisi ou l'action sélectionnée par l'utilisateur.
+        """
         console = Console()
         console.rule("Liste des persones correpondantes")
         console.print("")

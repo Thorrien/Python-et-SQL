@@ -14,6 +14,18 @@ class EventView:
         pass
 
     def eventview(self, user, event, userDAO):
+        """
+        Affiche les détails d'un événement spécifique et propose un menu d'actions en fonction
+        des autorisations de l'utilisateur.
+
+        Entrées:
+        - user: L'utilisateur courant.
+        - event: L'événement à afficher.
+        - userDAO: Objet permettant de récupérer des informations supplémentaires sur les utilisateurs.
+
+        Retourne:
+        - Le choix de l'utilisateur pour l'action à entreprendre.
+        """
         console = Console()
         console.rule(f"Données de l'évènement {event.id} ")
         console.print("")
@@ -124,6 +136,17 @@ class EventView:
                               "Veuillez essayer à nouveau.[/red]")
 
     def myMensualEvents(self, user, events):
+        """
+        Affiche un récapitulatif des événements du mois en cours et du mois suivant.
+        Propose un menu d'actions que l'utilisateur peut entreprendre en fonction de ses autorisations.
+
+        Entrées:
+        - user: L'utilisateur courant.
+        - events: Liste des événements à afficher.
+
+        Retourne:
+        - Le choix de l'utilisateur pour l'action à entreprendre.
+        """
         if user.authorisation('Support'):
             console = Console()
             console.rule("Détail des évènements du mois")
@@ -238,6 +261,16 @@ class EventView:
                                   "Veuillez essayer à nouveau.[/red]")
 
     def myTotalEvents(self, user, events):
+        """
+        Affiche tous les événements associés à l'utilisateur courant et propose un menu d'actions.
+
+        Entrées:
+        - user: L'utilisateur courant.
+        - events: Liste de tous les événements associés à l'utilisateur.
+
+        Retourne:
+        - Le choix de l'utilisateur pour l'action à entreprendre.
+        """
         if user.authorisation('Support'):
             console = Console()
             console.rule("Détail de tous vos évènements")
@@ -309,6 +342,17 @@ class EventView:
                                   "Veuillez essayer à nouveau.[/red]")
 
     def TotalEvents(self, user, events):
+        """
+        Affiche tous les événements disponibles, en indiquant lesquels sont accessibles à l'utilisateur.
+        Propose un menu d'actions.
+
+        Entrées:
+        - user: L'utilisateur courant.
+        - events: Liste de tous les événements à afficher.
+
+        Retourne:
+        - Le choix de l'utilisateur pour l'action à entreprendre.
+        """
         console = Console()
         console.rule("Détail de tous les évènements ")
         console.print("")

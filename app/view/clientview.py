@@ -10,6 +10,21 @@ class ClientView:
         pass
 
     def logclients(self, user, clients):
+        """
+        Affiche la liste des entreprises divisée en trois catégories :
+        - Mes entreprises : Entreprises appartenant à l'utilisateur.
+        - Entreprises sans commercial : Entreprises sans utilisateur attitré.
+        - Autres entreprises : Entreprises appartenant à d'autres utilisateurs.
+
+        Permet à l'utilisateur de choisir une action en fonction de ses autorisations.
+
+        Entrées:
+        - user: L'utilisateur courant.
+        - clients: Liste des entreprises à afficher.
+
+        Retourne:
+        - Le choix de l'utilisateur pour l'action à entreprendre.
+        """
         console = Console()
         console.rule("Entreprises")
         console.print("")
@@ -130,6 +145,16 @@ class ClientView:
                               "Veuillez essayer à nouveau.[/red]")
 
     def createcompany(self, user):
+        """
+        Permet à un utilisateur autorisé de créer une nouvelle entreprise.
+        Recueille le nom et l'adresse de l'entreprise, les confirme, puis les retourne.
+
+        Entrées:
+        - user: L'utilisateur courant.
+
+        Retourne:
+        - Tuple (nom, adresse): Les données saisies pour la nouvelle entreprise.
+        """
         if user.authorisation('Sale'):
             choix = None
             while choix != 'Oui':
@@ -174,6 +199,18 @@ class ClientView:
                                     "Veuillez essayer à nouveau.[/red]")
 
     def totalViewCompagny(self, user, company, contacts):
+        """
+        Affiche les détails complets d'une entreprise spécifique et de ses contacts associés.
+        Propose un menu d'actions en fonction des autorisations de l'utilisateur.
+
+        Entrées:
+        - user: L'utilisateur courant.
+        - company: L'entreprise à afficher.
+        - contacts: Liste des contacts associés à l'entreprise.
+
+        Retourne:
+        - Le choix de l'utilisateur pour l'action à entreprendre.
+        """
         console = Console()
         console.rule(f"Détail complet de l'entreprise {company.company_name}")
         console.print("")
@@ -302,6 +339,17 @@ class ClientView:
                               "à nouveau.[/red]")
 
     def createcontact(self, company, user):
+        """
+        Permet à un utilisateur autorisé de créer un nouveau contact pour une entreprise.
+        Recueille les informations du contact, les confirme, puis les retourne.
+
+        Entrées:
+        - company: L'entreprise pour laquelle créer un contact.
+        - user: L'utilisateur courant.
+
+        Retourne:
+        - Tuple (nom, email, téléphone, signataire): Les données saisies pour le nouveau contact.
+        """
         if company.user_id == user.id:
             choix = None
             while choix != 'Oui':
@@ -362,6 +410,17 @@ class ClientView:
                                     "essayer à nouveau.[/red]")
 
     def detailedContact(self, contact, company):
+        """
+        Affiche les détails d'un contact spécifique associé à une entreprise.
+        Propose un menu d'actions pour modifier ou supprimer le contact.
+
+        Entrées:
+        - contact: Le contact à afficher.
+        - company: L'entreprise à laquelle le contact est associé.
+
+        Retourne:
+        - Le choix de l'utilisateur pour l'action à entreprendre.
+        """
         console = Console()
         console.rule(f"Données du {contact.name} de l'entreprise"
                      f" : {company.company_name} ")
@@ -428,6 +487,17 @@ class ClientView:
                               "Veuillez essayer à nouveau.[/red]")
 
     def LiteViewCompagny(self, user, company, contacts):
+        """
+        Affiche un récapitulatif de l'entreprise et de ses contacts avec des options d'action limitées.
+
+        Entrées:
+        - user: L'utilisateur courant.
+        - company: L'entreprise à afficher.
+        - contacts: Liste des contacts associés à l'entreprise.
+
+        Retourne:
+        - Le choix de l'utilisateur pour l'action à entreprendre.
+        """
         console = Console()
         console.rule(f"Récapitulatif de l'entreprise {company.company_name}")
         console.print("")

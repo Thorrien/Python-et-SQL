@@ -19,6 +19,10 @@ class UserDAO:
         self.metadata.reflect(bind=self.engine)
 
     def tables(self):
+        """
+        Affiche les tables présentes dans la base de données ainsi que les détails de chaque colonne 
+        pour chaque table, y compris le nom et le type de colonne.
+        """
         inspector = inspect(self.engine)
         tables = inspector.get_table_names()
         print("Tables dans la database:")
@@ -33,6 +37,9 @@ class UserDAO:
             print(" ")
 
     def get_all_users(self):
+        """
+        Récupère et retourne tous les utilisateurs de la base de données.
+        """
         session = self.Session()
         try:
             users = session.query(User).all()
@@ -43,6 +50,10 @@ class UserDAO:
             session.close()
 
     def get_all_user_with_role_name(self):
+        """
+        Récupère et retourne tous les utilisateurs de la 
+        base de données avec le role détaillé.
+        """
         session = self.Session()
         try:
             users_with_roles = session.query(User, Role).join(Role).all()
@@ -65,6 +76,13 @@ class UserDAO:
             session.close()
 
     def get_user(self, user_id: int):
+        """
+        Récupère et retourne un utilisateur de la base de données en fonction de son ID.
+
+        Entrées:
+        - user_id (int): L'ID de l'utilisateur à récupérer.
+
+        """
         session = self.Session()
         try:
             user = session.query(User).filter(User.id == user_id).one_or_none()
@@ -75,6 +93,13 @@ class UserDAO:
             session.close()
 
     def get_user_by_email(self, email: str):
+        """
+        Récupère et retourne un utilisateur de la base de données en fonction de son email.
+
+        Entrées:
+        - email (str): L'email de l'utilisateur à récupérer.
+        
+        """
         session = self.Session()
         try:
             user = session.query(User).filter(
@@ -87,6 +112,13 @@ class UserDAO:
             session.close()
 
     def get_user_by_role(self, role_id: int):
+        """
+        Récupère et retourne tous les utilisateurs de la base de données ayant un rôle spécifique.
+
+        Entrées:
+        - role_id (int): L'ID du rôle pour lequel récupérer les utilisateurs.
+
+        """
         session = self.Session()
         try:
             user = session.query(User).filter(User.role_id == role_id).all()
@@ -97,6 +129,16 @@ class UserDAO:
             session.close()
 
     def add_user(self, name: str, email: str, password: str, role_id: int):
+        """
+        Ajoute un nouvel utilisateur à la base de 
+        données avec les informations fournies.
+
+        Entrées:
+        - name (str): Le nom de l'utilisateur.
+        - email (str): L'email de l'utilisateur.
+        - password (str): Le mot de passe de l'utilisateur.
+        - role_id (int): L'ID du rôle attribué à l'utilisateur.
+        """
         session = self.Session()
         try:
             new_user = User(
@@ -118,6 +160,13 @@ class UserDAO:
             session.close()
         
     def update_pasword_user(self, user_id: int, password: str):
+        """
+        Met à jour le mot de passe d'un utilisateur spécifique dans la base de données.
+
+        Entrées:
+        - user_id (int): L'ID de l'utilisateur dont le mot de passe doit être mis à jour.
+        - password (str): Le nouveau mot de passe à attribuer à l'utilisateur.
+        """
         session = self.Session()
         try:
             user = session.query(User).filter(User.id == user_id).one_or_none()
@@ -131,6 +180,15 @@ class UserDAO:
             session.close()
 
     def update_user(self, user_id: int, name: str, email: str, role_id: int):
+        """
+        Met à jour les informations d'un utilisateur spécifique dans la base de données.
+
+        Entrées:
+        - user_id (int): L'ID de l'utilisateur à mettre à jour.
+        - name (str): Le nouveau nom de l'utilisateur.
+        - email (str): Le nouvel email de l'utilisateur.
+        - role_id (int): Le nouvel ID de rôle attribué à l'utilisateur.
+        """
         session = self.Session()
         try:
             user = session.query(User).filter(User.id == user_id).one_or_none()
@@ -150,6 +208,12 @@ class UserDAO:
             session.close()
 
     def delete_user(self, user_id: int):
+        """
+        Supprime un utilisateur spécifique de la base de données.
+
+        Entrées:
+        - user_id (int): L'ID de l'utilisateur à supprimer.
+        """
         session = self.Session()
         try:
             user = session.query(User).filter(User.id == user_id).one_or_none()
@@ -168,6 +232,9 @@ class UserDAO:
             session.close()
 
     def get_all_roles(self):
+        """
+        Récupère et retourne tous les rôles de la base de données.
+        """
         session = self.Session()
         try:
             roles = session.query(Role).all()
@@ -177,8 +244,15 @@ class UserDAO:
         finally:
             session.close()
 
-
     def add_company(self, name: str, user_id: int, address: str):
+        """
+        Ajoute une nouvelle entreprise à la base de données avec les informations fournies.
+
+        Entrées:
+        - name (str): Le nom de l'entreprise.
+        - user_id (int): L'ID de l'utilisateur associé à l'entreprise.
+        - address (str): L'adresse de l'entreprise.
+        """    
         session = self.Session()
         try:
             new_company = Company(
@@ -195,6 +269,15 @@ class UserDAO:
             session.close()
 
     def update_company(self, id: int, name: str, address: str, user_id: int):
+        """
+        Met à jour les informations d'une entreprise spécifique dans la base de données.
+
+        Entrées:
+        - id (int): L'ID de l'entreprise à mettre à jour.
+        - name (str): Le nouveau nom de l'entreprise.
+        - address (str): La nouvelle adresse de l'entreprise.
+        - user_id (int): Le nouvel ID de l'utilisateur associé à l'entreprise.
+        """
         session = self.Session()
         try:
             company = session.query(Company).filter(
@@ -212,6 +295,12 @@ class UserDAO:
             session.close()
 
     def delete_company(self, company_id: int):
+        """
+        Supprime une entreprise spécifique de la base de données.
+
+        Entrées:
+        - company_id (int): L'ID de l'entreprise à supprimer.
+        """
         session = self.Session()
         try:
             company = session.query(Company).filter(
@@ -227,6 +316,9 @@ class UserDAO:
             session.close()
 
     def get_all_company(self):
+        """
+        Récupère et retourne toutes les entreprises de la base de données.
+        """
         session = self.Session()
         try:
             companys = session.query(Company).all()
@@ -237,6 +329,9 @@ class UserDAO:
             session.close()
 
     def get_all_company_without_user(self):
+        """
+        Récupère et retourne toutes les entreprises de la base de données qui ne sont associées à aucun utilisateur.
+        """
         session = self.Session()
         try:
             companys = session.query(Company).filter(
@@ -248,6 +343,12 @@ class UserDAO:
             session.close()
 
     def get_company(self, id: int):
+        """
+        Récupère et retourne une entreprise spécifique de la base de données en fonction de son ID.
+
+        Entrées:
+        - id (int): L'ID de l'entreprise à récupérer.
+        """
         session = self.Session()
         try:
             company = session.query(Company).filter(
@@ -260,6 +361,12 @@ class UserDAO:
             session.close()
 
     def get_company_by_user_id(self, user_id: int):
+        """
+        Récupère et retourne toutes les entreprises associées à un utilisateur spécifique dans la base de données.
+
+        Entrées:
+        - user_id (int): L'ID de l'utilisateur pour lequel récupérer les entreprises.
+        """
         session = self.Session()
         try:
             companys = session.query(Company).filter(
@@ -273,6 +380,22 @@ class UserDAO:
 
     def add_event(self, event_date_start, event_date_end, location: str,
                   id_user: int, attendees: int, notes=None):
+        """
+        Ajoute un nouvel événement à la base de données avec 
+        les informations fournies.
+
+        Entrées:
+        - event_date_start: La date et l'heure de début de l'événement.
+        - event_date_end: La date et l'heure de fin de l'événement.
+        - location (str): Le lieu de l'événement.
+        - id_user (int): L'ID de l'utilisateur associé à l'événement.
+        - attendees (int): Le nombre de participants à l'événement.
+        - notes (str, optionnel): Notes supplémentaires sur l'événement.
+
+        Retourne:
+        - int: L'ID de l'événement ajouté.
+
+        """
         session = self.Session()
         try:
             new_event = Event(
@@ -294,6 +417,14 @@ class UserDAO:
             session.close()
 
     def get_event(self, id: int):
+        """
+        Récupère et retourne un événement spécifique de la base
+        de données en fonction de son ID.
+
+        Entrées:
+        - id (int): L'ID de l'événement à récupérer.
+
+        """
         session = self.Session()
         try:
             event = session.query(Event).filter(Event.id == id).one_or_none()
@@ -304,6 +435,13 @@ class UserDAO:
             session.close()
 
     def get_all_events_by_user_id(self, user_id):
+        """
+        Récupère et retourne tous les événements associés à un utilisateur spécifique.
+
+        Entrées:
+        - user_id (int): L'ID de l'utilisateur pour lequel récupérer les événements.
+
+        """
         session = self.Session()
         try:
             events = session.query(Event).filter(
@@ -316,6 +454,11 @@ class UserDAO:
             session.close()
 
     def get_all_events_without_user(self):
+        """
+        Récupère et retourne tous les événements non associés à un utilisateur.
+
+        Gère les exceptions potentielles et ferme la session après l'opération.
+        """
         session = self.Session()
         try:
             events = session.query(Event).filter(Event.id_user == None).all()
@@ -326,6 +469,11 @@ class UserDAO:
             session.close()
 
     def get_all_events(self):
+        """
+        Récupère et retourne tous les événements de la base de données.
+
+        Gère les exceptions potentielles et ferme la session après l'opération.
+        """
         session = self.Session()
         try:
             events = session.query(Event).all()
@@ -337,6 +485,19 @@ class UserDAO:
 
     def update_event(self, id: int, event_date_start, event_date_end,
                      location: str, id_user: int, attendees: int, notes):
+        """
+        Met à jour les informations d'un événement spécifique dans la base de données.
+
+        Entrées:
+        - id (int): L'ID de l'événement à mettre à jour.
+        - event_date_start: La nouvelle date et heure de début de l'événement.
+        - event_date_end: La nouvelle date et heure de fin de l'événement.
+        - location (str): Le nouveau lieu de l'événement.
+        - id_user (int): Le nouvel ID de l'utilisateur associé à l'événement.
+        - attendees (int): Le nouveau nombre de participants.
+        - notes: Les nouvelles notes sur l'événement.
+        """
+
         session = self.Session()
         try:
             event = session.query(Event).filter(Event.id == id).one_or_none()
@@ -355,6 +516,13 @@ class UserDAO:
             session.close()
 
     def delete_event(self, event_id: int):
+        """
+        Supprime un événement spécifique de la base de données.
+
+        Entrées:
+        - event_id (int): L'ID de l'événement à supprimer.
+
+        """
         session = self.Session()
         try:
             event = session.query(Event).filter(
@@ -371,6 +539,17 @@ class UserDAO:
 
     def add_contact(self, compagny_id: int, name: str,
                     email: str, phone: str, signatory=False):
+        """
+        Ajoute un nouveau contact à la base de données avec les informations fournies.
+
+        Entrées:
+        - compagny_id (int): L'ID de l'entreprise associée au contact.
+        - name (str): Le nom du contact.
+        - email (str): L'email du contact.
+        - phone (str): Le numéro de téléphone du contact.
+        - signatory (bool, optionnel): Indique si le contact est signataire.
+
+        """
         session = self.Session()
         try:
             new_contact = Contact(
@@ -391,6 +570,17 @@ class UserDAO:
 
     def update_contact(self, id: int, compagny_id: int,
                        name: str, email: str, phone: str, signatory):
+        """
+        Met à jour les informations d'un contact spécifique dans la base de données.
+
+        Entrées:
+        - id (int): L'ID du contact à mettre à jour.
+        - compagny_id (int): Le nouvel ID de l'entreprise associée au contact.
+        - name (str): Le nouveau nom du contact.
+        - email (str): Le nouvel email du contact.
+        - phone (str): Le nouveau numéro de téléphone du contact.
+        - signatory: Met à jour le statut de signataire du contact.
+        """
         session = self.Session()
         try:
             contact = session.query(Contact).filter(
@@ -410,6 +600,12 @@ class UserDAO:
             session.close()
 
     def delete_contact(self, contact_id: int):
+        """
+        Supprime un contact spécifique de la base de données.
+
+        Entrées:
+        - contact_id (int): L'ID du contact à supprimer.
+        """
         session = self.Session()
         try:
             contact = session.query(Contact).filter(
@@ -425,6 +621,13 @@ class UserDAO:
             session.close()
 
     def get_contact(self, id: int):
+        """
+        Récupère et retourne un contact spécifique de la base de données en fonction de son ID.
+
+        Entrées:
+        - id (int): L'ID du contact à récupérer.
+        """
+
         session = self.Session()
         try:
             contact = session.query(Contact).filter(
@@ -437,6 +640,12 @@ class UserDAO:
             session.close()
 
     def get_all_contact_by_company_id(self, id):
+        """
+        Récupère et retourne tous les contacts associés à une entreprise spécifique dans la base de données.
+
+        Entrées:
+        - id (int): L'ID de l'entreprise pour laquelle récupérer les contacts.
+        """
         session = self.Session()
         try:
             contacts = session.query(Contact).filter(
@@ -449,6 +658,11 @@ class UserDAO:
             session.close()
 
     def get_all_contact(self):
+        """
+        Récupère et retourne tous les contacts de la base de données.
+
+        Gère les exceptions potentielles et ferme la session après l'opération.
+        """
         session = self.Session()
         try:
             contacts = session.query(Contact).all()
@@ -459,6 +673,13 @@ class UserDAO:
             session.close()
 
     def get_all_contacts_by_user_id(self, user_id: int):
+        """
+        Récupère et retourne tous les contacts associés aux entreprises d'un utilisateur spécifique.
+
+        Entrées:
+        - user_id (int): L'ID de l'utilisateur pour lequel récupérer les contacts.
+
+        """
         session = self.Session()
         try:
             contacts = (
@@ -476,6 +697,12 @@ class UserDAO:
             session.close()
 
     def delete_contract(self, contract_id: int):
+        """
+        Supprime un contrat spécifique de la base de données.
+
+        Entrées:
+        - contract_id (int): L'ID du contrat à supprimer.
+        """
         session = self.Session()
         try:
             contract = session.query(Contract).filter(
@@ -491,6 +718,12 @@ class UserDAO:
             session.close()
 
     def get_contract(self, contract_id: int):
+        """
+        Récupère et retourne un contrat spécifique de la base de données en fonction de son ID.
+
+        Entrées:
+        - contract_id (int): L'ID du contrat à récupérer.
+        """
         session = self.Session()
         try:
             contact = session.query(Contract).filter(
@@ -503,6 +736,9 @@ class UserDAO:
             session.close()
 
     def get_all_contract(self):
+        """
+        Récupère et retourne tous les contrats de la base de données.
+        """
         session = self.Session()
         try:
             contracts = session.query(Contract).all()
@@ -513,6 +749,12 @@ class UserDAO:
             session.close()
 
     def get_all_contracts_by_user_id(self, user_id: int):
+        """
+        Récupère et retourne tous les contrats associés à un utilisateur spécifique dans la base de données.
+
+        Entrées:
+        - user_id (int): L'ID de l'utilisateur pour lequel récupérer les contrats.
+        """
         session = self.Session()
         try:
             contracts = session.query(Contract).filter(
@@ -525,6 +767,12 @@ class UserDAO:
             session.close()
 
     def get_all_contracts_by_company_id(self, compagny_id: int):
+        """
+        Récupère et retourne tous les contrats associés à une entreprise spécifique dans la base de données.
+
+        Entrées:
+        - compagny_id (int): L'ID de l'entreprise pour laquelle récupérer les contrats.
+        """
         session = self.Session()
         try:
             contracts = session.query(Contract).filter(
@@ -537,6 +785,12 @@ class UserDAO:
             session.close()
 
     def get_all_my_contracts_sign(self, user_id: int):
+        """
+        Récupère et retourne tous les contrats signés associés à un utilisateur spécifique.
+
+        Entrées:
+        - user_id (int): L'ID de l'utilisateur pour lequel récupérer les contrats signés.
+        """
         session = self.Session()
         try:
             contracts = session.query(Contract).filter(
@@ -548,6 +802,9 @@ class UserDAO:
             session.close()
 
     def get_all_contracts_without_user(self):
+        """
+        Récupère et retourne tous les contrats qui ne sont associés à aucun utilisateur.
+        """
         session = self.Session()
         try:
             contracts = session.query(Contract).filter(
@@ -560,6 +817,13 @@ class UserDAO:
             session.close()
 
     def get_all_contracts_without_full_paiement(self, user_id: int):
+        """
+        Récupère et retourne tous les contrats associés à un utilisateur spécifique 
+        dont le paiement total n'a pas été effectué.
+
+        Entrées:
+        - user_id (int): L'ID de l'utilisateur pour lequel récupérer les contrats non payés en totalité.
+        """
         session = self.Session()
         try:
             contracts = session.query(Contract).filter(
@@ -573,6 +837,16 @@ class UserDAO:
 
     def add_contract(self, compagny_id: int, user_id: int, total_amont: float,
                      current_amont: float, sign=False):
+        """
+        Ajoute un nouveau contrat à la base de données avec les informations fournies.
+
+        Entrées:
+        - compagny_id (int): L'ID de l'entreprise associée au contrat.
+        - user_id (int): L'ID de l'utilisateur associé au contrat.
+        - total_amont (float): Le montant total du contrat.
+        - current_amont (float): Le montant actuel payé pour le contrat.
+        - sign (bool, optionnel): Indique si le contrat est signé.
+        """
         session = self.Session()
         try:
             contract = Contract(
@@ -593,6 +867,17 @@ class UserDAO:
 
     def update_contract(self, id: int, compagny_id: int, user_id: int,
                         total_amont: float, current_amont: float, sign=False):
+        """
+        Met à jour les informations d'un contrat spécifique dans la base de données.
+
+        Entrées:
+        - id (int): L'ID du contrat à mettre à jour.
+        - compagny_id (int): Le nouvel ID de l'entreprise associée au contrat.
+        - user_id (int): Le nouvel ID de l'utilisateur associé au contrat.
+        - total_amont (float): Le nouveau montant total du contrat.
+        - current_amont (float): Le nouveau montant actuel payé pour le contrat.
+        - sign (bool, optionnel): Met à jour le statut de signature du contrat.
+        """
         session = self.Session()
         try:
             contract = session.query(Contract).filter(
@@ -612,6 +897,14 @@ class UserDAO:
             session.close()
 
     def add_event_contract(self, event_id: int, contract_id: str):
+        """
+        Associe un contrat spécifique à un événement dans la base de données.
+
+        Entrées:
+        - event_id (int): L'ID de l'événement auquel associer le contrat.
+        - contract_id (str): L'ID du contrat à associer à l'événement.
+
+        """
         session = self.Session()
         try:
             event = session.query(Event).filter(
@@ -636,6 +929,16 @@ class UserDAO:
             session.close()
 
     def get_event_contract(self, event_id: int, contract_id: str):
+        """
+        Récupère et retourne un événement et un contrat spécifiques si le contrat est associé à l'événement.
+
+        Entrées:
+        - event_id (int): L'ID de l'événement à vérifier.
+        - contract_id (str): L'ID du contrat à vérifier.
+
+        Retourne:
+        - tuple: Un tuple contenant l'événement et le contrat s'ils sont associés, sinon (None, None).
+        """
         session = self.Session()
         try:
             event = session.query(Event).filter(
@@ -668,6 +971,14 @@ class UserDAO:
     def modify_event_contract(self, event_id: int,
                               old_contract_id: str,
                               new_contract_id: str):
+        """
+        Modifie l'association d'un contrat pour un événement en remplaçant un ancien contrat par un nouveau.
+
+        Entrées:
+        - event_id (int): L'ID de l'événement dont le contrat doit être modifié.
+        - old_contract_id (str): L'ID de l'ancien contrat à retirer de l'événement.
+        - new_contract_id (str): L'ID du nouveau contrat à ajouter à l'événement.
+        """
         session = self.Session()
         try:
 
@@ -703,6 +1014,13 @@ class UserDAO:
             session.close()
 
     def delete_event_contract(self, event_id: int, contract_id: str):
+        """
+        Supprime l'association d'un contrat spécifique d'un événement.
+
+        Entrées:
+        - event_id (int): L'ID de l'événement dont le contrat doit être dissocié.
+        - contract_id (str): L'ID du contrat à retirer de l'événement.
+        """
         session = self.Session()
         try:
 
@@ -732,6 +1050,15 @@ class UserDAO:
             session.close()
 
     def get_contract_for_event(self, event_id: int):
+        """
+        Récupère et retourne tous les contrats associés à un événement spécifique.
+
+        Entrées:
+        - event_id (int): L'ID de l'événement pour lequel récupérer les contrats.
+
+        Retourne:
+        - list: Une liste de contrats associés à l'événement.
+        """
         session = self.Session()
         try:
             event = session.query(Event).filter(
@@ -750,6 +1077,15 @@ class UserDAO:
             session.close()
 
     def get_event_for_contract(self, contract_id: str):
+        """
+        Récupère et retourne tous les événements associés à un contrat spécifique.
+
+        Entrées:
+        - contract_id (str): L'ID du contrat pour lequel récupérer les événements.
+
+        Retourne:
+        - list: Une liste d'événements associés au contrat.
+        """
         session = self.Session()
         try:
             contract = session.query(Contract).filter(
@@ -768,6 +1104,15 @@ class UserDAO:
             session.close()
 
     def get_company_events(self, company_id: int):
+        """
+        Récupère et retourne tous les événements associés à une entreprise spécifique via ses contrats.
+
+        Entrées:
+        - company_id (int): L'ID de l'entreprise pour laquelle récupérer les événements.
+
+        Retourne:
+        - list: Une liste d'événements associés aux contrats de l'entreprise.
+        """
         session = self.Session()
         try:
             company = session.query(Company).filter(
@@ -789,6 +1134,13 @@ class UserDAO:
             session.close()
 
     def get_all_event_details_with_company(self):
+        """
+        Récupère et retourne les détails de tous les événements avec les informations associées aux contrats 
+        et aux entreprises.
+
+        Retourne:
+        - list: Une liste de dictionnaires contenant les détails des événements, contrats, et entreprises associés.
+        """
         session = self.Session()
         try:
             results = session.query(
@@ -836,6 +1188,12 @@ class UserDAO:
             session.close()
 
     def get_text(self, id: int):
+        """
+        Récupère et retourne un texte spécifique de la base de données en fonction de son ID.
+
+        Entrées:
+        - id (int): L'ID du texte à récupérer.
+        """
         session = self.Session()
         try:
             text = session.query(Text).filter(Text.id == id).one_or_none()
@@ -846,6 +1204,13 @@ class UserDAO:
             session.close()
 
     def update_text(self, id: int, text: str):
+        """
+        Met à jour le contenu d'un texte spécifique dans la base de données.
+
+        Entrées:
+        - id (int): L'ID du texte à mettre à jour.
+        - text (str): Le nouveau contenu du texte.
+        """
         session = self.Session()
         try:
             texte = session.query(Text).filter(Text.id == id).one_or_none()
