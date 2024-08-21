@@ -2,4 +2,4 @@ env/
 notes.txt
 htmlcov/
 cle.py
-utils\config.py
+app/utils/config.py
